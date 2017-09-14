@@ -6,6 +6,7 @@ public class Parser {
 
     public Parser(ArrayList<Token> tokenList){
         this.tokenList = tokenList;
+        program();
     }
 
     private void id() {
@@ -105,11 +106,33 @@ public class Parser {
     }
 
     private TreeNode mainbody() {
-        TreeNode main = new TreeNode(Node.NMAIN);
+        TreeNode mainbody = new TreeNode(Node.NMAIN);
+
+        //Checking for 'main'
         if (tokenList.get(0).value() == TokId.TMAIN){
             tokenList.remove(0);
+            mainbody.setLeft(slist());
 
+            //Checking for 'begin'
+            if (tokenList.get(0).value() == TokId.TBEGN){
+                tokenList.remove(0);
+                mainbody.setRight(stats());
+
+                //Checking for 'end'
+                if (tokenList.get(0).value() == TokId.TENDK){
+                    tokenList.remove(0);
+
+                    //Checking for 'CD'
+                    if (tokenList.get(0).value() == TokId.TCD){
+                        tokenList.remove(0);
+                        id();
+                        return mainbody;
+                    }
+                }
+            }
         }
+        //TODO: error??
+        return null;
     }
 
     private TreeNode slist() {
