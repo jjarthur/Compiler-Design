@@ -1,18 +1,9 @@
-/**
- * Class: A1.java
- * Description: This class contains the main method controlling the compiler for CD.
- */
-
 import java.util.*;
 import java.io.*;
 
 public class A1 {
+	private ArrayList<Token> tokenList;
 
-	/**
-	 * Pre-conditions: input is a valid filename.
-	 * Post-conditions: Reads an input file from the user and
-	 * 					turns it into a string.
-	 */
 	public String readInput(String input){
 		Scanner scanner = new Scanner(System.in);
 		boolean success = false;
@@ -50,12 +41,14 @@ public class A1 {
 		return stream;
 	}
 	
-	public void run(String stream){
-		new Tokenizer(stream);
+	private void run(String stream){
+		Tokenizer tokenizer = new Tokenizer(stream);
+		tokenList = tokenizer.run();
 	}
 
 	public static void main(String[] args){
 		A1 compiler = new A1();
 		compiler.run(compiler.readInput(args[0]));
+		//System.out.println(compiler.readInput(args[0]));
 	}
 }

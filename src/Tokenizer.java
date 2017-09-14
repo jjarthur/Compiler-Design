@@ -1,33 +1,17 @@
-/**
- * Class: Tokenizer.java
- * Description: This class is responsible for lexical analysis of CD source files.
- * 				It separates each token and prints them to the console.
- */
+import java.util.ArrayList;
 
 public class Tokenizer {
-
-	//Private variables
+	
 	private String stream;
-	private int index, row, col;
-
-	//Public constructor
+	private int index;
+	
 	public Tokenizer(String stream){
 		this.stream = stream;
 		this.index = 0;
-		this.row = 0;
-		this.col = 0;
-
-		run();
 	}
 
-	//Private methods
-
-	/**
-	 * Pre-conditions: None.
-	 * Post-conditions: Controls the overall flow of the lexical analysis
-	 * 					and prints tokens to console.
-	 */
-	private void run(){
+	public ArrayList<Token> run(){
+		ArrayList<Token> tokenList = new ArrayList<>();
 		int lineLength = 0;
 		while (index < stream.length()){ //For each character in the stream
 			Token token = getToken();
@@ -41,25 +25,24 @@ public class Tokenizer {
 					lineLength = 0; //New line
 					lineLength += token.shortString().length();
 					System.out.print(token.shortString()); //Print to console
+					tokenList.add(token);
 				}
 				else{
 					lineLength += token.shortString().length();
 					System.out.print(token.shortString()); //Print to console
+					tokenList.add(token);
 				}
 			}
 			index++;
 		}
-		Token token = new Token(TokId.TEOF, row, col, null);
+		Token token = new Token(TokId.TEOF, 0, 0, null);
 		if (lineLength > 60){ //Checking if the length for the current line will exceed 60 characters
 			System.out.println();
 		}
 		System.out.println(token.shortString()); //Print to console
+		return tokenList;
 	}
 
-	/**
-	 * Pre-conditions: current should be valid char.
-	 * Post-conditions: Returns the char type string of current.
-	 */
 	private String getCharType(char current){
 		String charType;
 
@@ -81,10 +64,6 @@ public class Tokenizer {
 		return charType;
 	}
 
-	/**
-	 * Pre-conditions: stream should not be empty.
-	 * Post-conditions: Returns a token if found, otherwise returns null.
-	 */
 	private Token getToken(){
 		TokId tid = TokId.TUNDF;
 		String tokenStr = "";
@@ -227,7 +206,7 @@ public class Tokenizer {
 						tokenStr += current;
 						index++;
 						if (index < stream.length() && stream.charAt(index) == '='){ //If equality operator
-							return new Token(TokId.TDEQL, row, col, null);
+							return new Token(TokId.TDEQL, 0, 0, null);
 						}
 						else{
 							tid = TokId.TUNDF;
@@ -262,7 +241,7 @@ public class Tokenizer {
 						break;
 					case '/':
 						tid = TokId.TDIVT;
-						tokenStr += current;
+						tokenStr = null;
 						index++;
 						//Checking if token is an in-line comment
 						if (index < stream.length()){
@@ -279,37 +258,13 @@ public class Tokenizer {
 									}
 									return null;
 								}
-								else if (current == '*' && index < stream.length()){ //If multi-line comment
-									current = stream.charAt(index);
-									while (index < stream.length()-2){ //Whilst still within the comment
-										if (current == '*' && stream.charAt(index+1) == '-' && stream.charAt(index+2) == '/'){ //If end of multi-line comment token is found
-											index += 2;
-											return null;
-										}
-										index++;
-										if (index < stream.length()){
-											current = stream.charAt(index);
-										}
-										else{
-											System.out.println("\nError: Missing '*-/'");
-											return new Token(TokId.TUNDF, row, col, null);
-										}
-									}
-									System.out.println("\nError: Missing '*-/'");
-									return new Token(TokId.TUNDF, row, col, null);
-								}
 								else{
 									index -= 3;
-									tokenStr = null;
 								}
 							}
 							else{
 								index -= 2;
-								tokenStr = null;
 							}
-						}
-						else{
-							tokenStr = null;
 						}
 						break;
 					case '%':
@@ -331,12 +286,12 @@ public class Tokenizer {
 								current = stream.charAt(index);
 								if (current == '\n'){
 									System.out.println("\nError: Missing '\"'");
-									return new Token(TokId.TUNDF, row, col, tokenStr.substring(0,tokenStr.length()-1));
+									return new Token(TokId.TUNDF, 0,0 ,tokenStr.substring(0,tokenStr.length()-1));
 								}
 							}
 							else{
 								System.out.println("\nError: Missing '\"'");
-								return new Token(TokId.TUNDF, row, col, tokenStr);
+								return new Token(TokId.TUNDF, 0,0 ,tokenStr);
 							}
 						}
 						break;
@@ -359,14 +314,9 @@ public class Tokenizer {
 			}
 		}
 
-		return new Token(tid, row, col, tokenStr);
+		return new Token(tid, 0, 0, tokenStr);
 	}
 
-	/**
-	 * Pre-conditions: current is a valid char.
-	 * Post-conditions: Returns true if current is an operator,
-	 * 					otherwise returns false.
-	 */
 	private boolean isOperator(char current){
 		char[] operators = { '[', ']', '(', ')', ';', ',', ':', '.', '<', '>', '=', '!', '+', '-','*', '/', '%', '^', '"' };
 		for (int i = 0; i < operators.length; i++){
