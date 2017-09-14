@@ -24,8 +24,8 @@ public class Parser {
 
             id(); //Program name
             program.setLeft(globals());
-            //root.setMiddle(funcs());
-            //root.setRight(mainbody());
+            program.setMiddle(funcs());
+            program.setRight(mainbody());
 
         }
         else{
@@ -36,18 +36,18 @@ public class Parser {
 
     private TreeNode globals(){
         Token current = tokenList.get(0);
-        TreeNode node = new TreeNode(Node.NGLOB);
+        TreeNode globals = new TreeNode(Node.NGLOB);
 
         if (current.value() == TokId.TCONS){
-            node.setLeft(consts());
+            globals.setLeft(consts());
         }
         if (current.value() == TokId.TTYPS){
-            //node.setMiddle(types());
+            globals.setMiddle(types());
         }
         if (current.value() == TokId.TARRS){
-            //node.setLeft(arrays());
+            globals.setLeft(arrays());
         }
-        return node; //What if node is empty?
+        return globals; //What if globals is empty?
     }
 
     private TreeNode consts() {
@@ -98,11 +98,18 @@ public class Parser {
     }
 
     private TreeNode funcs() {
+        if (tokenList.get(0).value() == TokId.TFUNC){
+            return new TreeNode(Node.NFUNCS, func(), funcs());
+        }
         return null;
     }
 
     private TreeNode mainbody() {
-        return null;
+        TreeNode main = new TreeNode(Node.NMAIN);
+        if (tokenList.get(0).value() == TokId.TMAIN){
+            tokenList.remove(0);
+
+        }
     }
 
     private TreeNode slist() {
@@ -298,18 +305,26 @@ public class Parser {
     }
 
     private TreeNode elist() {
-        return null;
+        return new TreeNode(Node.NEXPL, bool(), elisttail());
     }
 
     private TreeNode elisttail() {
+        if (tokenList.get(0).value() == TokId.TCOMA){
+            tokenList.remove(0);
+            return elist();
+        }
         return null;
     }
 
     private TreeNode bool() {
-        return null;
+        return new TreeNode(Node.NBOOL, rel(), booltail());
     }
 
     private TreeNode booltail() {
+        Token current = tokenList.get(0);
+        if (current.value() == TokId.TANDK || current.value() == TokId.TORKW || current.value() == TokId.TXORK){
+            logop();
+        }
         return null;
     }
 
@@ -321,16 +336,51 @@ public class Parser {
         return null;
     }
 
+    //TODO: Symbol table stuff..
+    //TODO: logop children?
     private TreeNode logop(){
-        return exprtail(term());
+        Token current = tokenList.get(0);
+        if (current.value() == TokId.TANDK){
+            return new TreeNode(Node.NAND);
+        }
+        if (current.value() == TokId.TORKW){
+            return new TreeNode(Node.NOR);
+        }
+        if (current.value() == TokId.TXORK){
+            return new TreeNode(Node.NXOR);
+        }
+        //TODO: error?
+        return null;
     }
 
-    private TreeNode relop() {
+    //TODO: Symbol table stuff..
+    //TODO: relop children?
+    private TreeNode relop(){
+        Token current = tokenList.get(0);
+        if (current.value() == TokId.TDEQL){
+            return new TreeNode(Node.NEQL);
+        }
+        if (current.value() == TokId.TNEQL){
+            return new TreeNode(Node.NNEQ);
+        }
+        if (current.value() == TokId.TGRTR){
+            return new TreeNode(Node.NGTR);
+        }
+        if (current.value() == TokId.TLEQL){
+            return new TreeNode(Node.NLEQ);
+        }
+        if (current.value() == TokId.TLESS){
+            return new TreeNode(Node.NLSS);
+        }
+        if (current.value() == TokId.TGREQ){
+            return new TreeNode(Node.NGEQ);
+        }
+        //TODO: error?
         return null;
     }
 
     private TreeNode expr() {
-        return null;
+        return exprtail(term());
     }
 
     //TODO: term() ??
@@ -340,7 +390,7 @@ public class Parser {
             tokenList.remove(0);
             return new TreeNode(Node.NADD, term, term());
         }
-        if (current.value() == TokId.TADDT){
+        if (current.value() == TokId.TSUBT){
             tokenList.remove(0);
             return new TreeNode(Node.NSUB, term, term());
         }
@@ -400,9 +450,9 @@ public class Parser {
                 return new TreeNode(Node.NFALS);
             case TLPAR:
                 tokenList.remove(0);
-                TreeNode node = bool();
+                TreeNode exponent = bool();
                 //TODO: check for right parenthesis
-                return node;
+                return exponent;
         }
         //TODO: no 'is' keyword, throw error
         //return null for now
@@ -413,15 +463,20 @@ public class Parser {
         Token current = tokenList.get(0);
         id();
         if (current.value() == TokId.TLPAR){
-            TreeNode node = fncalltail();
+            TreeNode fncall = fncalltail();
             //TODO: check for right parenthesis
-            return node;
+            return fncall;
         }
         //TODO: error?
         return null;
     }
 
     private TreeNode fncalltail() {
+        Token current = tokenList.get(0);
+        if (current.value() == TokId.TTRUE || current.value() == TokId.TFALS || current.value() == TokId.TIDNT
+                || current.value() == TokId.TILIT || current.value() == TokId.TLPAR || current.value() == TokId.TNOTK){
+            return elist();
+        }
         return null;
     }
 
