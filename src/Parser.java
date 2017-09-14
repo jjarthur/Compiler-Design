@@ -18,7 +18,7 @@ public class Parser {
         //TODO: error?
     }
 
-    public TreeNode program(){
+    private TreeNode program(){
         TreeNode program = new TreeNode(Node.NPROG);
         if (tokenList.get(0).value() == TokId.TCD){ //CD
             tokenList.remove(0);
@@ -136,138 +136,278 @@ public class Parser {
     }
 
     private TreeNode slist() {
-        return null;
+        return new TreeNode(Node.NSDLST, sdecl(), slisttail());
     }
 
     private TreeNode slisttail() {
+        if (tokenList.get(0).value() == TokId.TCOMA){
+            tokenList.remove(0);
+            return slist();
+        }
         return null;
     }
 
     private TreeNode typelist() {
-        return null;
+        return new TreeNode(Node.NTYPEL, type(), typelisttail());
     }
 
     private TreeNode typelisttail() {
+        if (tokenList.get(0).value() == TokId.TIDNT) {
+            id();
+            return typelist();
+        }
         return null;
     }
 
+    //TODO: incomplete
     private TreeNode type() {
         return null;
     }
 
+    //TODO: incomplete
     private TreeNode typetail() {
         return null;
     }
 
     private TreeNode fields() {
-        return null;
+        return new TreeNode(Node.NFLIST, sdecl(), fieldstail());
     }
 
     private TreeNode fieldstail() {
+        if (tokenList.get(0).value() == TokId.TIDNT){
+            id();
+            return sdecl();
+        }
         return null;
     }
 
+    //TODO: incomplete
     private TreeNode sdecl() {
         return null;
     }
 
     private TreeNode arrdecls() {
-        return null;
+        return new TreeNode(Node.NALIST, arrdecl(), arrdeclstail());
     }
 
     private TreeNode arrdeclstail() {
+        if (tokenList.get(0).value() == TokId.TCOMA){
+            tokenList.remove(0);
+            return arrdecls();
+        }
         return null;
     }
 
+    //TODO: syntax table stuff
     private TreeNode arrdecl() {
+        id();
+        if (tokenList.get(0).value() == TokId.TCOLN){
+            tokenList.remove(0);
+            //typeid();
+        }
         return null;
     }
 
     private TreeNode func() {
+        TreeNode func = new TreeNode(Node.NFUNCS);
+        if (tokenList.get(0).value() == TokId.TFUNC){
+            tokenList.remove(0);
+            id();
+
+            if (tokenList.get(0).value() == TokId.TLBRK) {
+                tokenList.remove(0);
+                func.setLeft(plist());
+
+                if (tokenList.get(0).value() == TokId.TRBRK) {
+                    tokenList.remove(0);
+
+                    if (tokenList.get(0).value() == TokId.TCOLN) {
+                        tokenList.remove(0);
+                        func.setMiddle(rtype());
+                        func.setRight(funcbody());
+                    }
+                }
+            }
+        }
+        //TODO: error??
         return null;
     }
 
+    //TODO: syntax table stuff
     private TreeNode rtype() {
-        return null;
+        if (tokenList.get(0).value() == TokId.TVOID){
+            //void
+        }
+        return stype();
     }
 
+    //TODO: fix params
     private TreeNode plist() {
         return null;
     }
 
+    //TODO: fix params
     private TreeNode params() {
         return null;
     }
 
+    //TODO: fix params
     private TreeNode paramstail() {
         return null;
     }
 
+    //TODO: fix params
     private TreeNode param() {
         return null;
     }
 
+    //TODO: incomplete
     private TreeNode funcbody() {
         return null;
     }
 
+    //TODO: fix params
     private TreeNode locals() {
         return null;
     }
 
+    //TODO: fix params
     private TreeNode dlist() {
         return null;
     }
 
+    //TODO: fix params
     private TreeNode dlisttail() {
         return null;
     }
 
+    //TODO: fix params
     private TreeNode decl() {
         return null;
     }
 
+    //TODO: incomplete
     private TreeNode stype() {
         return null;
     }
 
+    //TODO: incomplete
     private TreeNode stats() {
         return null;
     }
 
+    //TODO: incomplete
     private TreeNode statstail() {
         return null;
     }
 
     private TreeNode strstat() {
+        if (tokenList.get(0).value() == TokId.TFORK){
+            return forstat();
+        }
+        if (tokenList.get(0).value() == TokId.TIFKW){
+            return ifstat();
+        }
         return null;
     }
 
+    //TODO: incomplete
     private TreeNode stat() {
         return null;
     }
 
     private TreeNode forstat() {
+        TreeNode forstat = new TreeNode(Node.NFOR);
+        if (tokenList.get(0).value() == TokId.TFORK){
+            tokenList.remove(0);
+
+            if (tokenList.get(0).value() == TokId.TLBRK){
+                tokenList.remove(0);
+                forstat.setLeft(asgnlist());
+
+                if (tokenList.get(0).value() == TokId.TSEMI){
+                    tokenList.remove(0);
+                    forstat.setMiddle(bool());
+
+                    if (tokenList.get(0).value() == TokId.TRBRK){
+                        tokenList.remove(0);
+                        forstat.setRight(stats());
+
+                        if (tokenList.get(0).value() == TokId.TENDK){
+                            tokenList.remove(0);
+                        }
+                    }
+                }
+            }
+        }
+        //TODO: error??
         return null;
     }
 
     private TreeNode repstat() {
+        TreeNode repstat = new TreeNode(Node.NREPT);
+        if (tokenList.get(0).value() == TokId.TREPT){
+            tokenList.remove(0);
+
+            if (tokenList.get(0).value() == TokId.TLBRK){
+                tokenList.remove(0);
+                repstat.setLeft(asgnlist());
+
+                if (tokenList.get(0).value() == TokId.TRBRK){
+                    tokenList.remove(0);
+                    repstat.setMiddle(stats());
+
+                    if (tokenList.get(0).value() == TokId.TUNTL){
+                        tokenList.remove(0);
+                        repstat.setRight(bool());
+                    }
+                }
+            }
+        }
+        //TODO: error??
         return null;
     }
 
     private TreeNode asgnlist() {
+        if (tokenList.get(0).value() == TokId.TIDNT){
+            return alist();
+        }
         return null;
     }
 
     private TreeNode alist() {
-        return null;
+        return new TreeNode(Node.NALIST, asgnstat(), alisttail());
     }
 
     private TreeNode alisttail() {
+        if (tokenList.get(0).value() == TokId.TCOMA){
+            tokenList.remove(0);
+            return alist();
+        }
         return null;
     }
 
     private TreeNode ifstat() {
+        TreeNode ifstat = new TreeNode(Node.NIFTH);
+        if (tokenList.get(0).value() == TokId.TIFKW){
+            tokenList.remove(0);
+
+            if (tokenList.get(0).value() == TokId.TLBRK){
+                tokenList.remove(0);
+                ifstat.setLeft(bool());
+
+                if (tokenList.get(0).value() == TokId.TRBRK){
+                    tokenList.remove(0);
+                    ifstat.setMiddle(stats());
+                    ifstat.setRight(elsestat());
+
+                    if (tokenList.get(0).value() == TokId.TENDK){
+                        tokenList.remove(0);
+                    }
+                }
+            }
+        }
+        //TODO: error??
         return null;
     }
 
@@ -364,12 +504,15 @@ public class Parser {
     private TreeNode logop(){
         Token current = tokenList.get(0);
         if (current.value() == TokId.TANDK){
+            tokenList.remove(0);
             return new TreeNode(Node.NAND);
         }
         if (current.value() == TokId.TORKW){
+            tokenList.remove(0);
             return new TreeNode(Node.NOR);
         }
         if (current.value() == TokId.TXORK){
+            tokenList.remove(0);
             return new TreeNode(Node.NXOR);
         }
         //TODO: error?
@@ -381,21 +524,27 @@ public class Parser {
     private TreeNode relop(){
         Token current = tokenList.get(0);
         if (current.value() == TokId.TDEQL){
+            tokenList.remove(0);
             return new TreeNode(Node.NEQL);
         }
         if (current.value() == TokId.TNEQL){
+            tokenList.remove(0);
             return new TreeNode(Node.NNEQ);
         }
         if (current.value() == TokId.TGRTR){
+            tokenList.remove(0);
             return new TreeNode(Node.NGTR);
         }
         if (current.value() == TokId.TLEQL){
+            tokenList.remove(0);
             return new TreeNode(Node.NLEQ);
         }
         if (current.value() == TokId.TLESS){
+            tokenList.remove(0);
             return new TreeNode(Node.NLSS);
         }
         if (current.value() == TokId.TGREQ){
+            tokenList.remove(0);
             return new TreeNode(Node.NGEQ);
         }
         //TODO: error?
@@ -486,6 +635,7 @@ public class Parser {
         Token current = tokenList.get(0);
         id();
         if (current.value() == TokId.TLPAR){
+            tokenList.remove(0);
             TreeNode fncall = fncalltail();
             //TODO: check for right parenthesis
             return fncall;
