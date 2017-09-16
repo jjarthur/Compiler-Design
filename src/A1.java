@@ -44,6 +44,7 @@ public class A1 {
 	private void run(String stream){
 		Tokenizer tokenizer = new Tokenizer(stream);
 		tokenList = tokenizer.run();
+		Parser parser = new Parser(tokenList);
 	}
 
 	public static void main(String[] args){

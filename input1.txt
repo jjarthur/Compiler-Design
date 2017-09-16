@@ -1,0 +1,7 @@
+CD Ex1
+main
+	x:integer
+begin
+    x << 5;
+end CD Ex1
+

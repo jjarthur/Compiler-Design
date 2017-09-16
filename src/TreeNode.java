@@ -86,7 +86,7 @@ public class TreeNode {
 	}
 
 	public String toString() {
-		String output = "";
+		String output = "test";
 		if (this.left != null){
 			output += left;
 		}

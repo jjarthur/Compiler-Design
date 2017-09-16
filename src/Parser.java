@@ -6,11 +6,11 @@ public class Parser {
 
     public Parser(ArrayList<Token> tokenList){
         this.tokenList = tokenList;
-        program();
+        printTree();
     }
 
-    public String toString() {
-
+    public void printTree() {
+        System.out.println(program().toString());
     }
 
     private void id() {
@@ -183,8 +183,13 @@ public class Parser {
         return null;
     }
 
-    //TODO: incomplete
     private TreeNode sdecl() {
+        id();
+        if (tokenList.get(0).value() == TokId.TCOLN){
+            tokenList.remove(0);
+            return stype();
+        }
+        //TODO: error ??
         return null;
     }
 
@@ -210,6 +215,7 @@ public class Parser {
         return null;
     }
 
+    //TODO: Symbol table stuff
     private TreeNode func() {
         TreeNode func = new TreeNode(Node.NFUNCS);
         if (tokenList.get(0).value() == TokId.TFUNC){
@@ -225,8 +231,7 @@ public class Parser {
 
                     if (tokenList.get(0).value() == TokId.TCOLN) {
                         tokenList.remove(0);
-                        func.setMiddle(rtype());
-                        func.setRight(funcbody());
+                        return funcbody(func);
                     }
                 }
             }
@@ -243,28 +248,73 @@ public class Parser {
         return stype();
     }
 
-    //TODO: fix params
     private TreeNode plist() {
+        Token current = tokenList.get(0);
+        if (current.value() == TokId.TCONS || current.value() == TokId.TIDNT){
+            return params();
+        }
         return null;
     }
 
-    //TODO: fix params
     private TreeNode params() {
-        return null;
+        return new TreeNode(Node.NPLIST, param(), paramstail());
     }
 
-    //TODO: fix params
     private TreeNode paramstail() {
+        if (tokenList.get(0).value() == TokId.TCOMA){
+            tokenList.remove(0);
+            return params();
+        }
         return null;
     }
 
-    //TODO: fix params
     private TreeNode param() {
+        if (tokenList.get(0).value() == TokId.TCONS){
+            tokenList.remove(0);
+            return new TreeNode(Node.NARRC, arrdecl());
+        }
+        if (paramvar().getValue() == Node.NSDECL){
+            return new TreeNode(Node.NSIMP);
+        }
+        if (paramvar().getValue() == Node.NARRD){
+            return new TreeNode(Node.NARRP);
+        }
+        //TODO: error ??
         return null;
     }
 
-    //TODO: incomplete
-    private TreeNode funcbody() {
+    private TreeNode paramvar() {
+        if (tokenList.get(0).value() == TokId.TCOMA){
+            tokenList.remove(0);
+            return paramvartail();
+        }
+        //TODO: error ??
+        return null;
+    }
+
+    //TODO: Syntax table stuff..
+    private TreeNode paramvartail() {
+        if (tokenList.get(0).value() == TokId.TIDNT){
+            id();
+            return new TreeNode(Node.NARRD);
+        }
+        stype();
+        return new TreeNode(Node.NSDECL);
+    }
+
+    private TreeNode funcbody(TreeNode func) {
+        func.setMiddle(locals());
+        if (tokenList.get(0).value() == TokId.TBEGN){
+            tokenList.remove(0);
+            func.setRight(stats());
+
+            if (tokenList.get(0).value() == TokId.TENDK){
+                tokenList.remove(0);
+
+                return func;
+            }
+        }
+        //TODO: error ??
         return null;
     }
 
@@ -582,10 +632,21 @@ public class Parser {
 
     //TODO: incomplete
     private TreeNode rel() {
-        return null;
+        Token current = tokenList.get(0);
+        if (current.value() == TokId.TNOTK){
+            return new TreeNode(Node.NNOT, rel());
+        }
+        return reltail(expr());
     }
 
-    private TreeNode reltail() {
+    private TreeNode reltail(TreeNode expr) {
+        Token current = tokenList.get(0);
+        if (current.value() == TokId.TDEQL || current.value() == TokId.TNEQL || current.value() == TokId.TGRTR
+                || current.value() == TokId.TLEQL || current.value() == TokId.TLESS || current.value() == TokId.TGREQ){
+            TreeNode relop = relop(expr);
+            relop.setLeft(expr());
+            return relop;
+        }
         return null;
     }
 
@@ -611,31 +672,31 @@ public class Parser {
 
     //TODO: Symbol table stuff..
     //TODO: relop children?
-    private TreeNode relop(){
+    private TreeNode relop(TreeNode expr){
         Token current = tokenList.get(0);
         if (current.value() == TokId.TDEQL){
             tokenList.remove(0);
-            return new TreeNode(Node.NEQL);
+            return new TreeNode(Node.NEQL, expr);
         }
         if (current.value() == TokId.TNEQL){
             tokenList.remove(0);
-            return new TreeNode(Node.NNEQ);
+            return new TreeNode(Node.NNEQ, expr);
         }
         if (current.value() == TokId.TGRTR){
             tokenList.remove(0);
-            return new TreeNode(Node.NGRT);
+            return new TreeNode(Node.NGRT, expr);
         }
         if (current.value() == TokId.TLEQL){
             tokenList.remove(0);
-            return new TreeNode(Node.NLEQ);
+            return new TreeNode(Node.NLEQ, expr);
         }
         if (current.value() == TokId.TLESS){
             tokenList.remove(0);
-            return new TreeNode(Node.NLSS);
+            return new TreeNode(Node.NLSS, expr);
         }
         if (current.value() == TokId.TGREQ){
             tokenList.remove(0);
-            return new TreeNode(Node.NGEQ);
+            return new TreeNode(Node.NGEQ, expr);
         }
         //TODO: error?
         return null;
