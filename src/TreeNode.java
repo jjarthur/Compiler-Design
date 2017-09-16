@@ -85,4 +85,17 @@ public class TreeNode {
 		index = 0;
 	}
 
+	public String toString() {
+		String output = "";
+		if (this.left != null){
+			output += left;
+		}
+		if (this.middle != null){
+			output += middle;
+		}
+		if (this.right != null){
+			output += right;
+		}
+		return output;
+	}
 }
