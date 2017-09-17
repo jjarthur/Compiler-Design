@@ -70,9 +70,7 @@ public class Parser {
 
     //TODO: tidy debug
     private TreeNode initlist() {
-        TreeNode initlist = new TreeNode(Node.NILIST, init(), initlisttail());
-        debug.add(initlist);
-        return initlist;
+        return new TreeNode(Node.NILIST, init(), initlisttail());
     }
 
     private TreeNode initlisttail(){
@@ -98,6 +96,7 @@ public class Parser {
 
     private TreeNode types() {
         if (tokenList.peek().value() == TokId.TTYPS){
+            System.out.println(tokenList.peek());
             tokenList.poll();
             return typelist();
         }
@@ -179,6 +178,7 @@ public class Parser {
             id();
 
             if (tokenList.peek().value() == TokId.TISKW){
+                System.out.println(tokenList.peek());
                 tokenList.poll();
                 return typetail(new TreeNode(Node.NUNDEF));
             }
@@ -189,16 +189,20 @@ public class Parser {
     //TODO: incomplete
     private TreeNode typetail(TreeNode type) {
         if (tokenList.peek().value() == TokId.TARRY){
+            System.out.println(tokenList.peek());
             tokenList.poll();
 
             if (tokenList.peek().value() == TokId.TLBRK){
+                System.out.println(tokenList.peek());
                 tokenList.poll();
                 type.setLeft(expr());
 
                 if (tokenList.peek().value() == TokId.TRBRK){
+                    System.out.println(tokenList.peek());
                     tokenList.poll();
 
                     if (tokenList.peek().value() == TokId.TOFKW){
+                        System.out.println(tokenList.peek());
                         tokenList.poll();
                         id();
                         type.setValue(Node.NATYPE);
@@ -211,6 +215,7 @@ public class Parser {
             type.setLeft(fields());
 
             if (tokenList.peek().value() == TokId.TENDK){
+                System.out.println(tokenList.peek());
                 tokenList.poll();
                 type.setValue(Node.NRTYPE);
                 return type;
@@ -232,11 +237,14 @@ public class Parser {
         return null;
     }
 
+    //TODO: Symbol table stuff...
     private TreeNode sdecl() {
         id();
         if (tokenList.peek().value() == TokId.TCOLN){
+            System.out.println(tokenList.peek());
             tokenList.poll();
-            return stype();
+            stype();
+            return new TreeNode(Node.NSDECL);
         }
         //TODO: error ??
         return null;
@@ -290,11 +298,24 @@ public class Parser {
     }
 
     //TODO: Symbol table stuff
-    private TreeNode rtype() {
-        if (tokenList.peek().value() == TokId.TVOID){
+    private void rtype() {
+        Token current = tokenList.peek();
+        if (current.value() == TokId.TVOID){
             //void
         }
-        return stype();
+        else{
+            switch(current.value()){
+                case TINTG:
+                    tokenList.remove(0);
+                    break;
+                case TREAL:
+                    tokenList.remove(0);
+                    break;
+                case TBOOL:
+                    tokenList.remove(0);
+                    break;
+            }
+        }
     }
 
     private TreeNode plist() {
@@ -341,7 +362,7 @@ public class Parser {
         return null;
     }
 
-    //TODO: Syntax table stuff..
+    //TODO: Symbol table stuff..
     private TreeNode paramvartail() {
         if (tokenList.peek().value() == TokId.TIDNT){
             id();
@@ -387,9 +408,23 @@ public class Parser {
         return null;
     }
 
-    //TODO: incomplete
-    private TreeNode stype() {
-        return null;
+    //TODO: Symbol table stuff..
+    private void stype() {
+        Token current = tokenList.peek();
+        switch(current.value()){
+            case TINTG:
+                System.out.println(tokenList.peek());
+                tokenList.remove(0);
+                break;
+            case TREAL:
+                System.out.println(tokenList.peek());
+                tokenList.remove(0);
+                break;
+            case TBOOL:
+                System.out.println(tokenList.peek());
+                tokenList.remove(0);
+                break;
+        }
     }
 
     //TODO: incomplete
