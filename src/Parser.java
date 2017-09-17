@@ -10,12 +10,13 @@ public class Parser {
     }
 
     public void printTree() {
-        System.out.println(program().toString());
+        System.out.println(program().toString(0));
     }
 
     private void id() {
         Token current = tokenList.get(0);
         if (current.value() == TokId.TIDNT) {
+            System.out.println(tokenList.get(0));
             tokenList.remove(0);
             //TODO: Create new node with id and add to tree
         }
@@ -25,6 +26,7 @@ public class Parser {
     private TreeNode program(){
         TreeNode program = new TreeNode(Node.NPROG);
         if (tokenList.get(0).value() == TokId.TCD){ //CD
+            System.out.println(tokenList.get(0));
             tokenList.remove(0);
 
             id(); //Program name
@@ -43,18 +45,24 @@ public class Parser {
 
         if (current.value() == TokId.TCONS){
             globals.setLeft(consts());
+            tokenList.remove(0);
+            current = tokenList.get(0);
         }
         if (current.value() == TokId.TTYPS){
             globals.setMiddle(types());
+            tokenList.remove(0);
+            current = tokenList.get(0);
         }
         if (current.value() == TokId.TARRS){
             globals.setLeft(arrays());
+            tokenList.remove(0);
         }
         return globals; //What if globals is empty?
     }
 
     private TreeNode consts() {
         if (tokenList.get(0).value() == TokId.TCONS){
+            System.out.println(tokenList.get(0));
             tokenList.remove(0);
             return initlist();
         }
@@ -67,8 +75,9 @@ public class Parser {
 
     private TreeNode initlisttail(){
         if (tokenList.get(0).value() == TokId.TCOMA){
+            System.out.println(tokenList.get(0));
             tokenList.remove(0);
-            return init();
+            return initlist();
         }
         return null;
     }
@@ -76,6 +85,7 @@ public class Parser {
     private TreeNode init(){
         id();
         if (tokenList.get(0).value() == TokId.TISKW){
+            System.out.println(tokenList.get(0));
             tokenList.remove(0);
             return new TreeNode(Node.NINIT, expr());
         }
@@ -163,11 +173,48 @@ public class Parser {
 
     //TODO: incomplete
     private TreeNode type() {
+        if (tokenList.get(0).value() == TokId.TIDNT){
+            id();
+
+            if (tokenList.get(0).value() == TokId.TISKW){
+                tokenList.remove(0);
+                return typetail(new TreeNode(Node.NUNDEF));
+            }
+        }
         return null;
     }
 
     //TODO: incomplete
-    private TreeNode typetail() {
+    private TreeNode typetail(TreeNode type) {
+        if (tokenList.get(0).value() == TokId.TARRY){
+            tokenList.remove(0);
+
+            if (tokenList.get(0).value() == TokId.TLBRK){
+                tokenList.remove(0);
+                type.setLeft(expr());
+
+                if (tokenList.get(0).value() == TokId.TRBRK){
+                    tokenList.remove(0);
+
+                    if (tokenList.get(0).value() == TokId.TOFKW){
+                        tokenList.remove(0);
+                        id();
+                        type.setValue(Node.NATYPE);
+                        return type;
+                    }
+                }
+            }
+        }
+        else{
+            type.setLeft(fields());
+
+            if (tokenList.get(0).value() == TokId.TENDK){
+                tokenList.remove(0);
+                type.setValue(Node.NRTYPE);
+                return type;
+            }
+        }
+        //TODO: error ??
         return null;
     }
 
@@ -647,7 +694,7 @@ public class Parser {
             relop.setLeft(expr());
             return relop;
         }
-        return null;
+        return expr;
     }
 
     //TODO: Symbol table stuff..
@@ -698,8 +745,7 @@ public class Parser {
             tokenList.remove(0);
             return new TreeNode(Node.NGEQ, expr);
         }
-        //TODO: error?
-        return null;
+        return expr;
     }
 
     private TreeNode expr() {
@@ -717,7 +763,7 @@ public class Parser {
             tokenList.remove(0);
             return new TreeNode(Node.NSUB, term, term());
         }
-        return null;
+        return term;
     }
 
     private TreeNode term(){
@@ -739,7 +785,7 @@ public class Parser {
             tokenList.remove(0);
             return new TreeNode(Node.NMOD, fact(), fact());
         }
-        return null;
+        return fact;
     }
 
     private TreeNode fact(){
@@ -750,10 +796,11 @@ public class Parser {
     private TreeNode facttail(TreeNode exponent){
         Token current = tokenList.get(0);
         if (current.value() == TokId.TCART){
+            System.out.println(tokenList.get(0));
             tokenList.remove(0);
-            return new TreeNode(Node.NPOW, exponent, exponent());
+            return new TreeNode(Node.NPOW, exponent, fact());
         }
-        return null;
+        return exponent;
     }
 
     //TODO: symbol table entries..
@@ -761,25 +808,37 @@ public class Parser {
     private TreeNode exponent(){
         Token current = tokenList.get(0);
         switch (current.value()){
+            case TIDNT:
+                id();
             case TILIT:
+                System.out.println(tokenList.get(0));
+                tokenList.remove(0);
                 return new TreeNode(Node.NILIT);
             case TFLIT:
+                tokenList.remove(0);
                 return new TreeNode(Node.NFLIT);
             case TFUNC:
+                tokenList.remove(0);
                 return fncall();
             case TTRUE:
+                tokenList.remove(0);
                 return new TreeNode(Node.NTRUE);
             case TFALS:
+                tokenList.remove(0);
                 return new TreeNode(Node.NFALS);
             case TLPAR:
                 tokenList.remove(0);
                 TreeNode exponent = bool();
-                //TODO: check for right parenthesis
-                return exponent;
+                if (tokenList.get(0).value() == TokId.TLPAR){
+                    tokenList.remove(0);
+                    return exponent;
+                }
+                //TODO: error ??
+                return null;
+            default:
+                //TODO: error ??
+                return null;
         }
-        //TODO: no 'is' keyword, throw error
-        //return null for now
-        return null;
     }
 
     private TreeNode fncall(){

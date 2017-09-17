@@ -1,0 +1,75 @@
+/--
+/-- CD Example Program - Exercise 99
+/-- 
+/-- This program is exactly the same as Ex98 but DOES use procedures and so
+/--   may be useful for testing the later versions of your compiler.
+/--
+/-- M. Hannaford
+/-- 05-Aug-2015
+/--
+
+CD ex99
+constants
+    size is 500, limit is 32
+types
+	XX is x:integer, y:integer end
+	YY is array[size] of XX
+arrays	ZZ : YY
+
+func Ones(zz:YY) : void
+	i : integer
+begin
+	for (i << 0; i<size)
+        	zz[i].x << 1;
+        	i << i+1;
+	end
+	return;
+end
+
+func Zeroes(zz:YY) : void
+	i:integer, j:integer, k:integer
+begin
+	for (i << 0; i<limit)
+            if (ZZ[i].x != 0)
+        	k << 2*i+3;
+        	for (j << i+k; j<limit)
+                    ZZ[j].x << 0;
+                    j << j+k;
+        	end
+            end
+            i << i+1;
+	end
+	return;
+end
+
+func Print(const zz:YY) : void
+	i:integer, j:integer, k:integer
+begin
+	for (k << 1, i << 0; i<size)
+            if (ZZ[i].x == 1)
+        	j << 2*i+3;
+        	if (j < 100) Out << " "; end
+        	if (j <  10) Out << " "; end
+        	Out << j;
+        	k << k+1;
+        	if (k % 10 == 0) Out << Line; end
+            end
+        i << i+1;
+	end
+	return;
+end
+
+main
+	i:integer	/-- unused, required by syntax
+begin
+	Ones(ZZ);
+
+	Zeroes(ZZ);
+
+	Out << "  ", 2;
+
+	Print(ZZ);
+
+	Out << Line;
+
+end CD ex99

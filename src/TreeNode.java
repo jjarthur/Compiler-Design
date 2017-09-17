@@ -85,16 +85,26 @@ public class TreeNode {
 		index = 0;
 	}
 
-	public String toString() {
-		String output = "test";
+	public String printNode(int level) {
+		String output = "";
+		String tab = "    ";
+		for (int i = 0; i < level; i++){
+			output += tab;
+		}
+		return output += nodeValue;
+	}
+
+	public String toString(int level) {
+		String output = "";
+		output += printNode(level) + "\n";
 		if (this.left != null){
-			output += left;
+			output += left.toString(++level);
 		}
 		if (this.middle != null){
-			output += middle;
+			output += middle.toString(++level);
 		}
 		if (this.right != null){
-			output += right;
+			output += right.toString(++level);
 		}
 		return output;
 	}
