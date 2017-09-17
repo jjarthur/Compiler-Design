@@ -1,4 +1,5 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Tokenizer {
 	
@@ -10,8 +11,8 @@ public class Tokenizer {
 		this.index = 0;
 	}
 
-	public ArrayList<Token> run(){
-		ArrayList<Token> tokenList = new ArrayList<>();
+	public Queue<Token> run(){
+		Queue<Token> tokenList = new LinkedList<>();
 		int lineLength = 0;
 		while (index < stream.length()){ //For each character in the stream
 			Token token = getToken();

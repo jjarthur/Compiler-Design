@@ -2,7 +2,7 @@ import java.util.*;
 import java.io.*;
 
 public class A1 {
-	private ArrayList<Token> tokenList;
+	private Queue<Token> tokenList;
 
 	public String readInput(String input){
 		Scanner scanner = new Scanner(System.in);
