@@ -87,7 +87,7 @@ public class TreeNode {
 
 	public String printNode(int level) {
 		String output = "";
-		String tab = "    ";
+		String tab = "      ";
 		for (int i = 0; i < level; i++){
 			output += tab;
 		}
@@ -98,13 +98,13 @@ public class TreeNode {
 		String output = "";
 		output += printNode(level) + "\n";
 		if (this.left != null){
-			output += left.toString(++level);
+			output += left.toString(level+1);
 		}
 		if (this.middle != null){
-			output += middle.toString(++level);
+			output += middle.toString(level+1);
 		}
 		if (this.right != null){
-			output += right.toString(++level);
+			output += right.toString(level+1);
 		}
 		return output;
 	}

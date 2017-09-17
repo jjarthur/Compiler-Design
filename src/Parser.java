@@ -1,8 +1,10 @@
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class Parser {
 
     private Queue<Token> tokenList;
+    public Queue<TreeNode> debug = new LinkedList<>();
 
     public Parser(Queue<Token> tokenList){
         this.tokenList = tokenList;
@@ -45,17 +47,14 @@ public class Parser {
 
         if (current.value() == TokId.TCONS){
             globals.setLeft(consts());
-            tokenList.poll();
             current = tokenList.peek();
         }
         if (current.value() == TokId.TTYPS){
             globals.setMiddle(types());
-            tokenList.poll();
             current = tokenList.peek();
         }
         if (current.value() == TokId.TARRS){
             globals.setLeft(arrays());
-            tokenList.poll();
         }
         return globals; //What if globals is empty?
     }
@@ -69,8 +68,11 @@ public class Parser {
         return null;
     }
 
+    //TODO: tidy debug
     private TreeNode initlist() {
-        return new TreeNode(Node.NILIST, init(), initlisttail());
+        TreeNode initlist = new TreeNode(Node.NILIST, init(), initlisttail());
+        debug.add(initlist);
+        return initlist;
     }
 
     private TreeNode initlisttail(){
