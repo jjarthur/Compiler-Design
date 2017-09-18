@@ -48,13 +48,15 @@ public class Parser {
         if (current.value() == TokId.TCONS){
             globals.setLeft(consts());
             current = tokenList.peek();
+            debug.add(globals.getLeft());
         }
         if (current.value() == TokId.TTYPS){
             globals.setMiddle(types());
             current = tokenList.peek();
+            debug.add(globals.getMiddle());
         }
         if (current.value() == TokId.TARRS){
-            globals.setLeft(arrays());
+            globals.setRight(arrays());
         }
         return globals; //What if globals is empty?
     }
@@ -276,6 +278,9 @@ public class Parser {
             System.out.println(tokenList.peek());
             tokenList.poll();
             //typeid();
+            TreeNode arrdecl = new TreeNode(Node.NARRD);
+            id();
+            return arrdecl;
         }
         return null;
     }
@@ -284,17 +289,21 @@ public class Parser {
     private TreeNode func() {
         TreeNode func = new TreeNode(Node.NFUNCS);
         if (tokenList.peek().value() == TokId.TFUNC){
+            System.out.println(tokenList.peek());
             tokenList.poll();
             id();
 
             if (tokenList.peek().value() == TokId.TLPAR) {
+                System.out.println(tokenList.peek());
                 tokenList.poll();
                 func.setLeft(plist());
 
                 if (tokenList.peek().value() == TokId.TRPAR) {
+                    System.out.println(tokenList.peek());
                     tokenList.poll();
 
                     if (tokenList.peek().value() == TokId.TCOLN) {
+                        System.out.println(tokenList.peek());
                         tokenList.poll();
                         return funcbody(func);
                     }
@@ -309,18 +318,23 @@ public class Parser {
     private void rtype() {
         Token current = tokenList.peek();
         if (current.value() == TokId.TVOID){
+            System.out.println(tokenList.peek());
+            tokenList.poll();
             //void
         }
         else{
             switch(current.value()){
                 case TINTG:
-                    tokenList.remove(0);
+                    System.out.println(tokenList.peek());
+                    tokenList.poll();
                     break;
                 case TREAL:
-                    tokenList.remove(0);
+                    System.out.println(tokenList.peek());
+                    tokenList.poll();
                     break;
                 case TBOOL:
-                    tokenList.remove(0);
+                    System.out.println(tokenList.peek());
+                    tokenList.poll();
                     break;
             }
         }
@@ -340,6 +354,7 @@ public class Parser {
 
     private TreeNode paramstail() {
         if (tokenList.peek().value() == TokId.TCOMA){
+            System.out.println(tokenList.peek());
             tokenList.poll();
             return params();
         }
@@ -348,13 +363,15 @@ public class Parser {
 
     private TreeNode param() {
         if (tokenList.peek().value() == TokId.TCONS){
+            System.out.println(tokenList.peek());
             tokenList.poll();
             return new TreeNode(Node.NARRC, arrdecl());
         }
-        if (paramvar().getValue() == Node.NSDECL){
+        TreeNode paramvar = paramvar();
+        if (paramvar.getValue() == Node.NSDECL){
             return new TreeNode(Node.NSIMP);
         }
-        if (paramvar().getValue() == Node.NARRD){
+        if (paramvar.getValue() == Node.NARRD){
             return new TreeNode(Node.NARRP);
         }
         //TODO: error ??
@@ -362,7 +379,9 @@ public class Parser {
     }
 
     private TreeNode paramvar() {
-        if (tokenList.peek().value() == TokId.TCOMA){
+        id();
+        if (tokenList.peek().value() == TokId.TCOLN){
+            System.out.println(tokenList.peek());
             tokenList.poll();
             return paramvartail();
         }
@@ -383,10 +402,12 @@ public class Parser {
     private TreeNode funcbody(TreeNode func) {
         func.setMiddle(locals());
         if (tokenList.peek().value() == TokId.TBEGN){
+            System.out.println(tokenList.peek());
             tokenList.poll();
             func.setRight(stats());
 
             if (tokenList.peek().value() == TokId.TENDK){
+                System.out.println(tokenList.peek());
                 tokenList.poll();
 
                 return func;
@@ -870,7 +891,7 @@ public class Parser {
         switch (current.value()){
             case TIDNT:
                 //TODO: idexp
-                //id();
+                id();
                 return new TreeNode(Node.NSIMV);
             case TILIT:
                 System.out.println(tokenList.peek());
