@@ -35,6 +35,7 @@ public class Parser {
             program.setLeft(globals());
             program.setMiddle(funcs());
             program.setRight(mainbody());
+
             return program;
         }
         //TODO: error?
@@ -48,12 +49,10 @@ public class Parser {
         if (current.value() == TokId.TCONS){
             globals.setLeft(consts());
             current = tokenList.peek();
-            debug.add(globals.getLeft());
         }
         if (current.value() == TokId.TTYPS){
             globals.setMiddle(types());
             current = tokenList.peek();
-            debug.add(globals.getMiddle());
         }
         if (current.value() == TokId.TARRS){
             globals.setRight(arrays());
@@ -70,7 +69,6 @@ public class Parser {
         return null;
     }
 
-    //TODO: tidy debug
     private TreeNode initlist() {
         return new TreeNode(Node.NILIST, init(), initlisttail());
     }
@@ -168,8 +166,11 @@ public class Parser {
         return null;
     }
 
+    //TODO: fix debug
     private TreeNode typelist() {
-        return new TreeNode(Node.NTYPEL, type(), typelisttail());
+        TreeNode typelist = new TreeNode(Node.NTYPEL, type(), typelisttail());
+        debug.add(typelist);
+        return typelist;
     }
 
     private TreeNode typelisttail() {
@@ -229,7 +230,7 @@ public class Parser {
             }
         }
         //TODO: error ??
-        return type;
+        return null;
     }
 
     private TreeNode fields() {
