@@ -108,4 +108,19 @@ public class TreeNode {
 		}
 		return output;
 	}
+
+	public String printNodeSpace() {
+		String output = "";
+		output += " " + nodeValue;
+		if (this.left != null){
+			output += left.printNodeSpace();
+		}
+		if (this.middle != null){
+			output += middle.printNodeSpace();
+		}
+		if (this.right != null){
+			output += right.printNodeSpace();
+		}
+		return output;
+	}
 }

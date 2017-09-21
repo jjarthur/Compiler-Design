@@ -8,7 +8,8 @@ public class Parser {
 
     public Parser(Queue<Token> tokenList){
         this.tokenList = tokenList;
-        printTree();
+//        printTree();
+        System.out.println(program().printNodeSpace());
     }
 
     public void printTree() {
@@ -492,15 +493,12 @@ public class Parser {
         return stats;
     }
 
-    //TODO: incomplete
     private TreeNode statstail() {
         Token current = tokenList.peek();
         if (current.value() == TokId.TENDK || current.value() == TokId.TUNTL || current.value() == TokId.TELSE){
             return null;
         }
-        else{
-            return stats();
-        }
+        return stats();
     }
 
     private TreeNode strstat() {
@@ -563,6 +561,7 @@ public class Parser {
                         if (tokenList.peek().value() == TokId.TENDK){
                             System.out.println(tokenList.peek());
                             tokenList.poll();
+                            return forstat;
                         }
                     }
                 }
