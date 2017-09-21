@@ -12,8 +12,16 @@ public class Parser {
     }
 
     public void printTree() {
-        System.out.println(program().toString(0));
-        //System.out.println(program().printNodeSpace());
+        //System.out.println(program().toString(0));
+        System.out.println(program().printNodeSpace());
+    }
+
+    private TreeNode syntaxError(){
+        Token current = tokenList.peek();
+        while(current.value() != TokId.TSEMI){
+            tokenList.poll();
+        }
+        return new TreeNode(Node.NUNDEF);
     }
 
     private void id() {
@@ -117,7 +125,7 @@ public class Parser {
         if (tokenList.peek().value() == TokId.TFUNC){
             return new TreeNode(Node.NFUNCS, func(), funcs());
         }
-        return new TreeNode(Node.NFUNCS);
+        return null;
     }
 
     private TreeNode mainbody() {
@@ -715,6 +723,7 @@ public class Parser {
                 tokenList.poll();
                 prlist.setValue(Node.NOUTL);
             }
+            //TODO: error ??
         }
         return prlist;
     }
