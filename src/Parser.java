@@ -8,12 +8,12 @@ public class Parser {
 
     public Parser(Queue<Token> tokenList){
         this.tokenList = tokenList;
-//        printTree();
-        System.out.println(program().printNodeSpace());
+        printTree();
     }
 
     public void printTree() {
         System.out.println(program().toString(0));
+        //System.out.println(program().printNodeSpace());
     }
 
     private void id() {
@@ -400,7 +400,6 @@ public class Parser {
             if (tokenList.peek().value() == TokId.TENDK){
                 System.out.println(tokenList.peek());
                 tokenList.poll();
-
                 return func;
             }
         }
@@ -607,7 +606,7 @@ public class Parser {
     }
 
     private TreeNode alist() {
-        return new TreeNode(Node.NALIST, asgnstat(), alisttail());
+        return new TreeNode(Node.NASGNS, asgnstat(), alisttail());
     }
 
     private TreeNode alisttail() {
@@ -639,6 +638,7 @@ public class Parser {
                     if (tokenList.peek().value() == TokId.TENDK){
                         System.out.println(tokenList.peek());
                         tokenList.poll();
+                        return ifstat;
                     }
                 }
             }
@@ -778,36 +778,41 @@ public class Parser {
     }
 
     private TreeNode var() {
+        TreeNode var = new TreeNode(Node.NSIMV);
         id();
-        return new TreeNode(Node.NSIMV, vararr());
+        return vararr(var);
     }
 
-    private TreeNode vararr() {
-        TreeNode vararr = new TreeNode(Node.NAELT);
+    private TreeNode vararr(TreeNode var) {
         if (tokenList.peek().value() == TokId.TLBRK){
             System.out.println(tokenList.peek());
             tokenList.poll();
-            vararr.setLeft(expr());
+            var.setValue(Node.NAELT);
+            var.setLeft(expr());
 
             if (tokenList.peek().value() == TokId.TRBRK){
                 System.out.println(tokenList.peek());
                 tokenList.poll();
-                vararr.setRight(vararrtail());
-                return vararr;
+                return vararrtail(var);
             }
+        }
+        else{
+            var.setValue(Node.NSIMV);
+            return var;
         }
         //TODO: error?? or epsilon...
         return null;
     }
 
-    private TreeNode vararrtail() {
+    private TreeNode vararrtail(TreeNode vararr) {
         if (tokenList.peek().value() == TokId.TDOTT){
             System.out.println(tokenList.peek());
             tokenList.poll();
+            vararr.setValue(Node.NARRV);
             id();
-            //TODO: return
+            vararr.setRight(new TreeNode(Node.NSIMV));
         }
-        return null;
+        return vararr;
     }
 
     private TreeNode elist() {
@@ -848,7 +853,7 @@ public class Parser {
         if (current.value() == TokId.TDEQL || current.value() == TokId.TNEQL || current.value() == TokId.TGRTR
                 || current.value() == TokId.TLEQL || current.value() == TokId.TLESS || current.value() == TokId.TGREQ){
             TreeNode relop = relop(expr);
-            relop.setLeft(expr());
+            relop.setRight(expr());
             return relop;
         }
         return expr;

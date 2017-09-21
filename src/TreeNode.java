@@ -87,7 +87,7 @@ public class TreeNode {
 
 	public String printNode(int level) {
 		String output = "";
-		String tab = "      ";
+		String tab = "   ";
 		for (int i = 0; i < level; i++){
 			output += tab;
 		}
