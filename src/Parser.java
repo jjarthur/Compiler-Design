@@ -18,8 +18,9 @@ public class Parser {
 
     private TreeNode syntaxError(){
         Token current = tokenList.peek();
-        while(current.value() != TokId.TSEMI){
+        while(current.value() != TokId.TSEMI && current.value() != TokId.TEOF){
             tokenList.poll();
+            current = tokenList.peek();
         }
         return new TreeNode(Node.NUNDEF);
     }
@@ -31,7 +32,6 @@ public class Parser {
             tokenList.poll();
             //TODO: Create new node with id and add to tree
         }
-        //TODO: error?
     }
 
     private TreeNode program(){
@@ -47,8 +47,7 @@ public class Parser {
 
             return program;
         }
-        //TODO: error?
-        return null;
+        return syntaxError();
     }
 
     private TreeNode globals(){
@@ -66,7 +65,7 @@ public class Parser {
         if (current.value() == TokId.TARRS){
             globals.setRight(arrays());
         }
-        return globals; //What if globals is empty?
+        return globals;
     }
 
     private TreeNode consts() {
@@ -98,9 +97,7 @@ public class Parser {
             tokenList.poll();
             return new TreeNode(Node.NINIT, expr());
         }
-        //TODO: no 'is' keyword, throw error
-        //return null for now
-        return null;
+        return syntaxError();
     }
 
     private TreeNode types() {
@@ -158,8 +155,7 @@ public class Parser {
                 }
             }
         }
-        //TODO: error??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode slist() {
@@ -175,11 +171,8 @@ public class Parser {
         return null;
     }
 
-    //TODO: fix debug
     private TreeNode typelist() {
-        TreeNode typelist = new TreeNode(Node.NTYPEL, type(), typelisttail());
-        debug.add(typelist);
-        return typelist;
+        return new TreeNode(Node.NTYPEL, type(), typelisttail());
     }
 
     private TreeNode typelisttail() {
@@ -189,7 +182,6 @@ public class Parser {
         return null;
     }
 
-    //TODO: incomplete
     private TreeNode type() {
         if (tokenList.peek().value() == TokId.TIDNT){
             id();
@@ -200,10 +192,9 @@ public class Parser {
                 return typetail(new TreeNode(Node.NUNDEF));
             }
         }
-        return null;
+        return syntaxError();
     }
 
-    //TODO: incomplete
     private TreeNode typetail(TreeNode type) {
         if (tokenList.peek().value() == TokId.TARRY){
             System.out.println(tokenList.peek());
@@ -238,8 +229,7 @@ public class Parser {
                 return type;
             }
         }
-        //TODO: error ??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode fields() {
@@ -264,8 +254,7 @@ public class Parser {
             stype();
             return new TreeNode(Node.NSDECL);
         }
-        //TODO: error ??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode arrdecls() {
@@ -292,7 +281,7 @@ public class Parser {
             id();
             return arrdecl;
         }
-        return null;
+        return syntaxError();
     }
 
     //TODO: Symbol table stuff
@@ -322,8 +311,7 @@ public class Parser {
                 }
             }
         }
-        //TODO: error??
-        return null;
+        return syntaxError();
     }
 
     //TODO: Symbol table stuff
@@ -373,8 +361,7 @@ public class Parser {
         if (paramvar.getValue() == Node.NARRD){
             return new TreeNode(Node.NARRP);
         }
-        //TODO: error ??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode paramvar() {
@@ -384,8 +371,7 @@ public class Parser {
             tokenList.poll();
             return paramvartail();
         }
-        //TODO: error ??
-        return null;
+        return syntaxError();
     }
 
     //TODO: Symbol table stuff..
@@ -411,8 +397,7 @@ public class Parser {
                 return func;
             }
         }
-        //TODO: error ??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode locals() {
@@ -452,8 +437,7 @@ public class Parser {
                 return new TreeNode(Node.NARRD);
             }
         }
-        //TODO: error ??
-        return null;
+        return syntaxError();
     }
 
     //TODO: Symbol table stuff..
@@ -492,8 +476,7 @@ public class Parser {
                 tokenList.poll();
             }
             else{
-                //TODO: error ??
-                return null;
+                return syntaxError();
             }
         }
         stats.setRight(statstail());
@@ -515,7 +498,7 @@ public class Parser {
         if (tokenList.peek().value() == TokId.TIFKW){
             return ifstat();
         }
-        return null;
+        return syntaxError();
     }
 
     private TreeNode stat() {
@@ -530,7 +513,7 @@ public class Parser {
                     return callstat();
                 }
                 else{
-                    return asgnstat(); //TODO: vararr??
+                    return asgnstat();
                 }
             case TINKW:
                 return iostat();
@@ -539,8 +522,7 @@ public class Parser {
             case TRETN:
                 return returnstat();
             default:
-                //TODO: error ??
-                return null;
+                return syntaxError();
         }
     }
 
@@ -574,8 +556,7 @@ public class Parser {
                 }
             }
         }
-        //TODO: error??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode repstat() {
@@ -602,8 +583,7 @@ public class Parser {
                 }
             }
         }
-        //TODO: error??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode asgnlist() {
@@ -651,8 +631,7 @@ public class Parser {
                 }
             }
         }
-        //TODO: error??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode elsestat() {
@@ -673,8 +652,7 @@ public class Parser {
             asgnstat.setRight(bool());
             return asgnstat;
         }
-        //TODO: error??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode iostat() {
@@ -698,8 +676,7 @@ public class Parser {
                 return iostatcall(new TreeNode(Node.NOUTP));
             }
         }
-        //TODO: error??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode iostatcall(TreeNode iostat) {
@@ -723,13 +700,12 @@ public class Parser {
                 tokenList.poll();
                 prlist.setValue(Node.NOUTL);
             }
-            //TODO: error ??
+            return syntaxError();
         }
         return prlist;
     }
 
     private TreeNode callstat() {
-        //id();
         if (tokenList.peek().value() == TokId.TLPAR){
             System.out.println(tokenList.peek());
             tokenList.poll();
@@ -741,8 +717,7 @@ public class Parser {
                 return callstat;
             }
         }
-        //TODO: error??
-        return null;
+        return syntaxError();
     }
 
     private TreeNode callstattail() {
@@ -807,8 +782,7 @@ public class Parser {
         else{
             return var;
         }
-        //TODO: error?? or epsilon...
-        return null;
+        return syntaxError();
     }
 
     private TreeNode vararrtail(TreeNode vararr) {
@@ -884,8 +858,7 @@ public class Parser {
             tokenList.poll();
             return new TreeNode(Node.NXOR);
         }
-        //TODO: error?
-        return null;
+        return syntaxError();
     }
 
     //TODO: Symbol table stuff..
@@ -1021,11 +994,8 @@ public class Parser {
                     tokenList.poll();
                     return exponent;
                 }
-                //TODO: error ??
-                return null;
             default:
-                //TODO: error ??
-                return null;
+                return syntaxError();
         }
     }
 
@@ -1042,8 +1012,7 @@ public class Parser {
                 return fncall;
             }
         }
-        //TODO: error?
-        return null;
+        return syntaxError();
     }
 
     private TreeNode fncalltail() {
