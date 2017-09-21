@@ -1,0 +1,12 @@
+CD ex2
+/-- <globals>
+/-- <funcs>
+main
+  x : real,
+  y : integer,
+  z : boolean
+begin
+  x << 76 + 3 - ( 4 % 2 );
+  y << 3.14159;
+  z << true;
+end CD ex2

@@ -1,0 +1,10 @@
+CD ex1
+/-- <globals>
+/-- <funcs>
+main
+  x : real,
+  y : integer,
+  z : boolean
+begin
+  Out << "Hello World";
+end CD ex1
