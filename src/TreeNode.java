@@ -14,6 +14,7 @@ public class TreeNode {
 
 	private static int count = 0;
 	private static int index = 0;
+	private static int lineLength = 0;
 	private Node nodeValue;
 	private int idx;
 	private TreeNode left,middle,right;
@@ -111,7 +112,13 @@ public class TreeNode {
 
 	public String printNodeSpace() {
 		String output = "";
-		output += " " + nodeValue;
+		output += nodeValue;
+		while (output.length() % 7 != 0) output = output + " ";
+		lineLength += 7;
+		if (lineLength > 70){
+			output += "\n";
+			lineLength = 0; //New line
+		}
 		if (this.left != null){
 			output += left.printNodeSpace();
 		}

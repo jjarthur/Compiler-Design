@@ -8,7 +8,7 @@
 /-- 05-Aug-2015
 *-/
 
-CD ex99
+CD@ ex99
 constants
     size is 500, limit is 32
 types

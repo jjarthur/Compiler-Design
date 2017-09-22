@@ -42,8 +42,10 @@ public class A1 {
 	}
 	
 	private void run(String stream){
+		System.out.println("-------------------- Scanner --------------------");
 		Tokenizer tokenizer = new Tokenizer(stream);
 		tokenList = tokenizer.run();
+		System.out.println("\n-------------------- Parser --------------------");
 		Parser parser = new Parser(tokenList);
 	}
 

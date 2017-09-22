@@ -95,7 +95,7 @@ public class Token {
     public String toString() {		// toString method is only meant to be used for debug printing
         String s = tid.toString();
         while (s.length() % 6 != 0) s = s + " ";
-        s = s +" " + line;
+        s = s + " " + line;
         if (str == null) return s;
         if (tid != TokId.TUNDF)
             s += " " + str;

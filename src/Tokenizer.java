@@ -30,18 +30,18 @@ public class Tokenizer {
 			if (token != null){ //If valid token
 				if (token.value() == TokId.TUNDF){ //If an TUNDF token
 					lineLength = 0; //New line
-					//System.out.println("\nError: Undefined token " + token.shortString()); //Print to console
+					System.out.println("\nError: Undefined token on line " + token.getLn() + token.shortString()); //Print to console
 				}
 				else if(lineLength > 60){ //Checking if the length for the current line will exceed 60 characters
-					//System.out.println();
+					System.out.println();
 					lineLength = 0; //New line
 					lineLength += token.shortString().length();
-					//System.out.print(token.shortString()); //Print to console
+					System.out.print(token.shortString()); //Print to console
 					tokenList.add(token);
 				}
 				else{
 					lineLength += token.shortString().length();
-					//System.out.print(token.shortString()); //Print to console
+					System.out.print(token.shortString()); //Print to console
 					tokenList.add(token);
 				}
 			}
@@ -49,9 +49,9 @@ public class Tokenizer {
 		}
 		Token token = new Token(TokId.TEOF, row, col, null);
 		if (lineLength > 60){ //Checking if the length for the current line will exceed 60 characters
-			//System.out.println();
+			System.out.println();
 		}
-		//System.out.println(token.shortString()); //Print to console
+		System.out.println(token.shortString()); //Print to console
 		return tokenList;
 	}
 

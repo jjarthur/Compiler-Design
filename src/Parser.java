@@ -8,11 +8,14 @@ public class Parser {
 
     public Parser(Queue<Token> tokenList){
         this.tokenList = tokenList;
-        printTree();
+        printNodes();
     }
 
     public void printTree() {
-        //System.out.println(program().toString(0));
+        System.out.println(program().toString(0));
+    }
+
+    public void printNodes(){
         System.out.println(program().printNodeSpace());
     }
 
