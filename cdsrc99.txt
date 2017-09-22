@@ -1,4 +1,4 @@
-/--
+/-*
 /-- CD Example Program - Exercise 99
 /-- 
 /-- This program is exactly the same as Ex98 but DOES use procedures and so
@@ -6,7 +6,7 @@
 /--
 /-- M. Hannaford
 /-- 05-Aug-2015
-/--
+*-/
 
 CD ex99
 constants
