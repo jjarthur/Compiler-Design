@@ -4,7 +4,6 @@ import java.util.Queue;
 public class Parser {
 
     private Queue<Token> tokenList;
-    public Queue<TreeNode> debug = new LinkedList<>();
 
     public Parser(Queue<Token> tokenList){
         this.tokenList = tokenList;
@@ -21,6 +20,7 @@ public class Parser {
 
     private TreeNode syntaxError(){
         Token current = tokenList.peek();
+        System.out.println("Syntax error on line " + current.getLn());
         while(current.value() != TokId.TSEMI && current.value() != TokId.TEOF){
             tokenList.poll();
             current = tokenList.peek();
