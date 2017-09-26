@@ -1,5 +1,3 @@
-import sun.reflect.generics.tree.Tree;
-
 import java.util.Queue;
 
 public class Parser {
@@ -9,6 +7,7 @@ public class Parser {
     public Parser(Queue<Token> tokenList){
         this.tokenList = tokenList;
         printNodes();
+//        printTree();
     }
 
     public void printTree() {
@@ -252,8 +251,9 @@ public class Parser {
         if (tokenList.peek().value() == TokId.TCOLN){
             System.out.println(tokenList.peek());
             tokenList.poll();
-            stype();
-            return new TreeNode(Node.NSDECL);
+            if (stype() != null){ //TODO: Symbol table stuff
+                return new TreeNode(Node.NSDECL);
+            }
         }
         return syntaxError();
     }
@@ -529,10 +529,10 @@ public class Parser {
 
     private TreeNode stattail() {
         if (tokenList.peek().value() == TokId.TLBRK){
-            return asgnstat(vararr(new TreeNode(Node.NSIMV)));
+            return asgnstat(vararr(new TreeNode(Node.NSIMV)), false);
         }
         else{
-            return asgnstat(false);
+            return asgnstat(new TreeNode(Node.NSIMV), false);
         }
     }
 
@@ -604,7 +604,7 @@ public class Parser {
     }
 
     private TreeNode alist() {
-        return new TreeNode(Node.NASGNS, asgnstat(true), alisttail());
+        return new TreeNode(Node.NASGNS, asgnstat(new TreeNode(Node.NUNDEF),true), alisttail());
     }
 
     private TreeNode alisttail() {
@@ -653,11 +653,14 @@ public class Parser {
         return null;
     }
 
-    private TreeNode asgnstat(boolean consume) {
+    private TreeNode asgnstat(TreeNode var, boolean consume) {
         TreeNode asgnstat = new TreeNode(Node.NASGN);
         if (consume){
             asgnstat.setLeft(var());
         }
+        else{
+            asgnstat.setLeft(var);
+        }
         if (tokenList.peek().value() == TokId.TASGN){
             System.out.println(tokenList.peek());
             tokenList.poll();
@@ -666,17 +669,17 @@ public class Parser {
         }
         return syntaxError();
     }
-
-    private TreeNode asgnstat(TreeNode var) {
-        TreeNode asgnstat = new TreeNode(Node.NASGN, var);
-        if (tokenList.peek().value() == TokId.TASGN){
-            System.out.println(tokenList.peek());
-            tokenList.poll();
-            asgnstat.setRight(bool());
-            return asgnstat;
-        }
-        return syntaxError();
-    }
+//
+//    private TreeNode asgnstat(TreeNode var) {
+//        TreeNode asgnstat = new TreeNode(Node.NASGN, var);
+//        if (tokenList.peek().value() == TokId.TASGN){
+//            System.out.println(tokenList.peek());
+//            tokenList.poll();
+//            asgnstat.setRight(bool());
+//            return asgnstat;
+//        }
+//        return syntaxError();
+//    }
 
     private TreeNode iostat() {
         if (tokenList.peek().value() == TokId.TINKW){
