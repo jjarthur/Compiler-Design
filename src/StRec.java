@@ -1,13 +1,14 @@
 public class StRec {
 
-    private String lexeme, type;
+    private String lexeme;
     private int ln;
 
-    public StRec(String lexeme, String type, int ln){
+    public StRec(String lexeme, int ln){
         this.lexeme = lexeme;
-        this.type = type;
         this.ln = ln;
     }
 
-
+    public String getLexeme() {
+        return lexeme;
+    }
 }

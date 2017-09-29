@@ -323,6 +323,7 @@ public class Tokenizer {
 						break;
 					case '"':
 						tid = TokId.TSTRG;
+						tokenStr += current;
 						index++;
 						current = stream.charAt(index);
 						while (current != '"' && index < stream.length()){ //Until the next quotation marks
@@ -340,6 +341,7 @@ public class Tokenizer {
 								return new Token(TokId.TUNDF, row, col, tokenStr);
 							}
 						}
+						tokenStr += current;
 						break;
 				}
 				break;

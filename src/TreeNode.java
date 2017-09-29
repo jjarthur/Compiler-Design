@@ -8,8 +8,6 @@
 ////
 ////
 
-import java.io.*;
-
 public class TreeNode {
 
 	private static int count = 0;
@@ -113,8 +111,17 @@ public class TreeNode {
 	public String printNodeSpace() {
 		String output = "";
 		output += nodeValue;
-		while (output.length() % 7 != 0) output = output + " ";
-		lineLength += 7;
+
+		if (name != null){
+			output += " " + name.getLexeme();
+		}
+		if (type != null){
+			output += " " + type.getLexeme();
+		}
+		output += " ";
+
+		while (output.length() % 7 != 0) output += " ";
+		lineLength += output.length();
 		if (lineLength > 70){
 			output += "\n";
 			lineLength = 0; //New line
