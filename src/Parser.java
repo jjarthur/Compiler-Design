@@ -3,6 +3,7 @@ import java.util.Queue;
 public class Parser {
 
     private Queue<Token> tokenList;
+    private HashTable symbolTable = new HashTable();
 
     public Parser(Queue<Token> tokenList){
         this.tokenList = tokenList;
@@ -28,10 +29,12 @@ public class Parser {
         return new TreeNode(Node.NUNDEF);
     }
 
-    private void newSymbol() {
+    private void newSymbol(String type) {
+        Token token = tokenList.peek();
+        symbolTable.insertSymbol(token.getStr(), type, token.getLn());
+        //TODO: add StRec to TreeNode?
         System.out.println(tokenList.peek());
         tokenList.poll();
-        //TODO: Create new node with newSymbol and add to tree
     }
 
     private TreeNode program(){
@@ -40,7 +43,7 @@ public class Parser {
             System.out.println(tokenList.peek());
             tokenList.poll();
 
-            newSymbol(); //Program name
+            newSymbol("string"); //Program name
             program.setLeft(globals());
             program.setMiddle(funcs());
             program.setRight(mainbody());
@@ -91,7 +94,7 @@ public class Parser {
     }
 
     private TreeNode init(){
-        newSymbol();
+        newSymbol("string");
         if (tokenList.peek().value() == TokId.TISKW){
             System.out.println(tokenList.peek());
             tokenList.poll();
@@ -149,7 +152,7 @@ public class Parser {
                     if (tokenList.peek().value() == TokId.TCD){
                         System.out.println(tokenList.peek());
                         tokenList.poll();
-                        newSymbol();
+                        newSymbol("string");
                         return mainbody;
                     }
                 }
@@ -184,7 +187,7 @@ public class Parser {
 
     private TreeNode type() {
         if (tokenList.peek().value() == TokId.TIDNT){
-            newSymbol();
+            newSymbol("string");
 
             if (tokenList.peek().value() == TokId.TISKW){
                 System.out.println(tokenList.peek());
@@ -212,7 +215,7 @@ public class Parser {
                     if (tokenList.peek().value() == TokId.TOFKW){
                         System.out.println(tokenList.peek());
                         tokenList.poll();
-                        newSymbol();
+                        newSymbol("string");
                         type.setValue(Node.NATYPE);
                         return type;
                     }
@@ -247,7 +250,7 @@ public class Parser {
 
     //TODO: Symbol table stuff...
     private TreeNode sdecl() {
-        newSymbol();
+        newSymbol("string");
         if (tokenList.peek().value() == TokId.TCOLN){
             System.out.println(tokenList.peek());
             tokenList.poll();
@@ -273,13 +276,13 @@ public class Parser {
 
     //TODO: Symbol table stuff
     private TreeNode arrdecl() {
-        newSymbol();
+        newSymbol("string");
         if (tokenList.peek().value() == TokId.TCOLN){
             System.out.println(tokenList.peek());
             tokenList.poll();
             //typeid();
             TreeNode arrdecl = new TreeNode(Node.NARRD);
-            newSymbol();
+            newSymbol("string");
             return arrdecl;
         }
         return syntaxError();
@@ -291,7 +294,7 @@ public class Parser {
         if (tokenList.peek().value() == TokId.TFUNC){
             System.out.println(tokenList.peek());
             tokenList.poll();
-            newSymbol();
+            newSymbol("string");
 
             if (tokenList.peek().value() == TokId.TLPAR) {
                 System.out.println(tokenList.peek());
@@ -366,7 +369,7 @@ public class Parser {
     }
 
     private TreeNode paramvar() {
-        newSymbol();
+        newSymbol("string");
         if (tokenList.peek().value() == TokId.TCOLN){
             System.out.println(tokenList.peek());
             tokenList.poll();
@@ -378,7 +381,7 @@ public class Parser {
     //TODO: Symbol table stuff..
     private TreeNode paramvartail() {
         if (tokenList.peek().value() == TokId.TIDNT){
-            newSymbol();
+            newSymbol("string");
             return new TreeNode(Node.NARRD);
         }
         stype();
@@ -423,7 +426,7 @@ public class Parser {
 
     //TODO: fix params
     private TreeNode decl() {
-        newSymbol();
+        newSymbol("string");
         Token current = tokenList.peek();
         if (current.value() == TokId.TCOLN){
             System.out.println(tokenList.peek());
@@ -508,7 +511,7 @@ public class Parser {
             case TREPT:
                 return repstat();
             case TIDNT: //Could be asgnstat or callstat
-                newSymbol(); //TODO: consume via var
+                newSymbol("string");
                 current = tokenList.peek();
                 if (current.value() == TokId.TLPAR){
                     return callstat();
@@ -788,7 +791,7 @@ public class Parser {
 
     private TreeNode var() {
         TreeNode var = new TreeNode(Node.NSIMV);
-        newSymbol();
+        newSymbol("string");
         return vararr(var);
     }
 
@@ -1023,7 +1026,7 @@ public class Parser {
     }
 
     private TreeNode fncall(){
-        newSymbol();
+        newSymbol("string");
         if (tokenList.peek().value() == TokId.TLPAR){
             System.out.println(tokenList.peek());
             tokenList.poll();

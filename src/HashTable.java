@@ -41,31 +41,40 @@ public class HashTable {
 		return null;
 	}
 
-	public StRec insertSymbol(String s, int ln) {
+	public StRec insertSymbol(String s, String t, int ln) {
 		StRec d = lookupSymbol(s);
 		if (d != null) return null;
 		int h = hash(s);
-		d = new StRec(s,ln);
+		d = new StRec(s,t,ln);
 		table[h] = new HashTableItem(s,d,table[h]);
 		return d;
 	}
 
-	public StRec insertSymbol(String s, int v, int ln) {
-		StRec d = lookupSymbol(s);
-		if (d != null) return null;
-		int h = hash(s);
-		d = new StRec(s,v,ln);
-		table[h] = new HashTableItem(s,d,table[h]);
-		return d;
-	}
-	public StRec insertSymbol(String s, double v, int ln) {
-		StRec d = lookupSymbol(s);
-		if (d != null) return null;
-		int h = hash(s);
-		d = new StRec(s,v,ln);
-		table[h] = new HashTableItem(s,d,table[h]);
-		return d;
-	}
+//	public StRec insertSymbol(String s, int ln) {
+//		StRec d = lookupSymbol(s);
+//		if (d != null) return null;
+//		int h = hash(s);
+//		d = new StRec(s,ln);
+//		table[h] = new HashTableItem(s,d,table[h]);
+//		return d;
+//	}
+//
+//	public StRec insertSymbol(String s, int v, int ln) {
+//		StRec d = lookupSymbol(s);
+//		if (d != null) return null;
+//		int h = hash(s);
+//		d = new StRec(s,v,ln);
+//		table[h] = new HashTableItem(s,d,table[h]);
+//		return d;
+//	}
+//	public StRec insertSymbol(String s, double v, int ln) {
+//		StRec d = lookupSymbol(s);
+//		if (d != null) return null;
+//		int h = hash(s);
+//		d = new StRec(s,v,ln);
+//		table[h] = new HashTableItem(s,d,table[h]);
+//		return d;
+//	}
 
   // COMP3290/6290 CD Compiler
   //
