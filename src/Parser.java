@@ -851,15 +851,17 @@ public class Parser {
     }
 
     private TreeNode bool() {
-        return new TreeNode(Node.NBOOL, rel(), booltail());
+        return booltail(rel());
     }
 
-    private TreeNode booltail() {
+    private TreeNode booltail(TreeNode rel) {
         Token current = tokenList.peek();
         if (current.value() == TokId.TANDK || current.value() == TokId.TORKW || current.value() == TokId.TXORK){
-            return logop();
+            TreeNode logop = logop(rel);
+            logop.setRight(rel());
+            return booltail(logop);
         }
-        return null;
+        return rel;
     }
 
     private TreeNode rel() {
@@ -881,22 +883,28 @@ public class Parser {
         return expr;
     }
 
-    private TreeNode logop(){
+    private TreeNode logop(TreeNode rel){
         Token current = tokenList.peek();
         if (current.value() == TokId.TANDK){
             //System.out.println(tokenList.peek());
+            TreeNode logop = new TreeNode(Node.NAND);
+            logop.setLeft(rel);
             tokenList.poll();
-            return new TreeNode(Node.NAND);
+            return logop;
         }
         if (current.value() == TokId.TORKW){
             //System.out.println(tokenList.peek());
+            TreeNode logop = new TreeNode(Node.NOR);
+            logop.setLeft(rel);
             tokenList.poll();
-            return new TreeNode(Node.NOR);
+            return logop;
         }
         if (current.value() == TokId.TXORK){
             //System.out.println(tokenList.peek());
+            TreeNode logop = new TreeNode(Node.NXOR);
+            logop.setLeft(rel);
             tokenList.poll();
-            return new TreeNode(Node.NXOR);
+            return logop;
         }
         return syntaxError();
     }
