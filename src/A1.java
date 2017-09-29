@@ -42,7 +42,7 @@ public class A1 {
 	}
 	
 	private void run(String stream){
-		System.out.println("-------------------- Scanner --------------------");
+		//System.out.println("-------------------- Scanner --------------------");
 		Tokenizer tokenizer = new Tokenizer(stream);
 		tokenList = tokenizer.run();
 		System.out.println("\n-------------------- Parser --------------------");
@@ -52,6 +52,5 @@ public class A1 {
 	public static void main(String[] args){
 		A1 compiler = new A1();
 		compiler.run(compiler.readInput(args[0]));
-		//System.out.println(compiler.readInput(args[0]));
 	}
 }
