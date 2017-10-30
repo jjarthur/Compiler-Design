@@ -1,5 +1,5 @@
 //
-//	COMP3290/6290 CD Compiler
+//	COMP3290/6290 CD A3
 //
 //	Node - Enumerated Class - Syntax tree node values for TreeNode
 //

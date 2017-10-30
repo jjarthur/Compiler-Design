@@ -1,7 +1,9 @@
+import com.sun.org.apache.xpath.internal.SourceTree;
+
 import java.util.*;
 import java.io.*;
 
-public class A1 {
+public class A3 {
 	private Queue<Token> tokenList;
 
 	public String readInput(String input){
@@ -40,17 +42,31 @@ public class A1 {
 		
 		return stream;
 	}
+
+	private String listing(String file){
+		String listing = "1 ";
+		int line = 2;
+
+		for (int i = 0; i < file.length(); i++) {
+			listing += file.charAt(i);
+			if (file.charAt(i) == '\n'){
+				listing += line++ + " ";
+			}
+		}
+		return listing;
+	}
 	
 	private void run(String stream){
+		System.out.println(listing(stream));
 		//System.out.println("-------------------- Scanner --------------------");
 		Tokenizer tokenizer = new Tokenizer(stream);
 		tokenList = tokenizer.run();
-		System.out.println("\n-------------------- Parser --------------------");
+		//System.out.println("\n-------------------- Parser --------------------");
 		Parser parser = new Parser(tokenList);
 	}
 
 	public static void main(String[] args){
-		A1 compiler = new A1();
+		A3 compiler = new A3();
 		compiler.run(compiler.readInput(args[0]));
 	}
 }

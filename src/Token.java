@@ -1,4 +1,4 @@
-// COMP3290 CD Compiler
+// COMP3290 CD A3
 //
 //	Token class	- constructs a token on behalf of the scanner for it to be sent to the parser.
 //			- IDNTs/ILITs/FLITs/Strings do not have their symbol table reference set in this class,
@@ -28,7 +28,7 @@ public class Token {
     private int line;		// line number on listing
     private int pos;		// character position within line
     private String str;		// actual lexeme character string from scanner
-//	private StRec symbol;		// symbol table entry - used in Pt3 for the Parser, not needed in Pt1
+	private StRec symbol;		// symbol table entry - used in Pt3 for the Parser, not needed in Pt1
 
     public Token(TokId t, int ln, int p, String s) {
         tid = t;
@@ -39,7 +39,7 @@ public class Token {
             TokId v = checkKeywords(s);			// (match is case-insensitive)
             if (v != TokId.TIDNT) { tid = v; str = null; }	// if keyword, alter token type
         }
-//		symbol = null;	// initially null, got from Parser SymTab lookup if TIDNT/TILIT/TFLIT/TSTRG
+		symbol = null;	// initially null, got from Parser SymTab lookup if TIDNT/TILIT/TFLIT/TSTRG
     }
 
     public TokId value() { return tid; }
@@ -50,9 +50,9 @@ public class Token {
 
     public String getStr() { return str; }
 
-//	public StRec getSymbol() { return symbol; }			// ready for Part 3
+	public StRec getSymbol() { return symbol; }			// ready for Part 3
 
-//	public void setSymbol(StRec x) {symbol = x; }			// ready for Part 3
+	public void setSymbol(StRec x) { symbol = x; }			// ready for Part 3
 
 
     private TokId checkKeywords(String s) {

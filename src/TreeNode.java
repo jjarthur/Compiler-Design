@@ -1,5 +1,5 @@
 ////
-////	COMP3290/6290 CD Compiler
+////	COMP3290/6290 CD A3
 ////
 ////	Syntax Tree Class - Builds a syntax tree node
 ////
@@ -113,10 +113,10 @@ public class TreeNode {
 		output += nodeValue;
 
 		if (name != null){
-			output += " " + name.getLexeme();
+			output += " " + name.getName();
 		}
 		if (type != null){
-			output += " " + type.getLexeme();
+			output += " " + type.getName();
 		}
 		output += " ";
 

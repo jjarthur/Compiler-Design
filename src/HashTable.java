@@ -76,7 +76,7 @@ public class HashTable {
 //		return d;
 //	}
 
-  // COMP3290/6290 CD Compiler
+  // COMP3290/6290 CD A3
   //
   // Symbol Table Node class - Links StRec records into the hash table.
   //
