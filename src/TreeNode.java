@@ -104,9 +104,6 @@ public class TreeNode {
     }
 
     public void setType(StRec st) {
-        if (name != null) {
-            name.setTypeName(type);
-        }
         type = st;
     }
 

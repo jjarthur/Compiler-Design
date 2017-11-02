@@ -69,8 +69,9 @@ public class SymbolTable {
     public String toString(){
         String output = "\n\n---GLOBALS---\n";
         for (String key: globals.keySet()){
-            String value = globals.get(key).toString();
-            //String value = globals.get(key).getDeclPlace().getType().toString();
+            StRec s = globals.get(key);
+            String value = s.toString();
+            //String value= globals.get(key).getDeclPlace().getType().toString();
             output += value + "\n";
         }
 
