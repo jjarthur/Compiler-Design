@@ -13,7 +13,7 @@ public class Parser {
         this.symbolTable = new SymbolTable();
         this.scope = SymbolTable.GLOBALS;
         printNodes();
-        //printTree();
+//        printTree();
         System.out.println(symbolTable);
     }
 
@@ -50,6 +50,10 @@ public class Parser {
         return new TreeNode(Node.NUNDEF);
     }
 
+    public void semanticError(String error, int ln){
+        System.out.println("Semantic error on line " + ln + ": " + error);
+    }
+
     /**
      * Pre-conditions: node must be a valid TreeNode with name identifier.
      * Post-conditions: Adds a name symbol table record for specified node.
@@ -59,7 +63,7 @@ public class Parser {
         StRec symbol = new StRec(token.getStr(), token.getLn());
 
         if (symbolTable.lookup(symbol.getName(), scope) != null){ //If exists in symbol table
-            System.out.println("Semantic error on line " + token.getLn() + ": " + token.getStr() + " is already defined in this scope");
+            semanticError(token.getStr() + " is already defined in this scope", token.getLn());
         }
         symbolTable.insert(symbol, scope);
         node.setName(symbolTable.lookup(symbol.getName(),scope));
@@ -72,7 +76,7 @@ public class Parser {
         StRec name = symbolTable.lookup(token.getStr(), scope);
 
         if (name == null){ //If name does not exist in symbol table
-            System.out.println("Semantic error on line " + token.getLn() + ": " + token.getStr() + " is not defined in this scope");
+            semanticError(token.getStr() + " is not defined in this scope", token.getLn());
         }
         tokenList.poll();
         return name;
@@ -86,12 +90,11 @@ public class Parser {
         Token token = tokenList.peek();
         StRec symbol = symbolTable.lookup(token.getStr(), SymbolTable.GLOBALS);
         if (symbol == null){ //If symbol does not exist in symbol table
-            System.out.println("Semantic error on line " + token.getLn() + ": " + token.getStr() + " is not defined in this scope");
+            semanticError(token.getStr() + " is not defined in this scope", token.getLn());
         }
         node.setType(symbol);
         node.getName().setTypeName(symbol);
         //todo set the hashmap of this (this is custom types, ie symbol.setHashMap
-
 
         tokenList.poll();
     }
@@ -117,6 +120,10 @@ public class Parser {
             case "boolean":
                 return StRec.BOOLTYPE;
             default:
+//                StRec symbol = symbolTable.lookup(type, SymbolTable.GLOBALS);
+//                if (symbol != null){
+//                    return symbol;
+//                }
                 return null;
         }
     }
@@ -228,6 +235,11 @@ public class Parser {
 
                     if (tokenList.peek().value() == TokId.TCD){ //Checking for 'CD'
                         tokenList.poll();
+
+                        StRec programName = symbolTable.lookup(tokenList.peek().getStr(), SymbolTable.GLOBALS);
+                        if (programName == null){ //If EOF name is not the same as program name
+                            semanticError("EOF name not equal to program name", tokenList.peek().getLn());
+                        }
                         mainbody.setName(getName());
                         return mainbody;
                     }
@@ -520,6 +532,11 @@ public class Parser {
                 tokenList.poll();
                 return "boolean";
             default:
+                tokenList.poll();
+//                StRec symbol = symbolTable.lookup(current.getStr(), SymbolTable.GLOBALS);
+//                if (symbol != null){
+//                    return symbol.getName();
+//                }
                 return null;
         }
     }

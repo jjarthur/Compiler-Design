@@ -86,10 +86,10 @@ public class StRec {
         if (typeName != null){
             output += typeName.getName();
         }
-        output += " | ";
-        if  (hashTable != null){
-            output += hashTable.toString();
-        }
+//        output += " | ";
+//        if  (hashTable != null){
+//            output += hashTable.toString();
+//        }
         return output;
     }
 }
