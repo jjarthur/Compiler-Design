@@ -18,8 +18,6 @@ public class SymbolTable {
         main = new HashMap<>();
         literals = new HashMap<>();
         functions = new HashMap<>();
-        globals.put("integer", StRec.INTTYPE);
-
     }
 
     public void addFunction(String lexeme){
@@ -49,27 +47,22 @@ public class SymbolTable {
         return globals.get(lexeme);
     }
 
-    public StRec insert(String lexeme, String scope, int ln){
-//        String lexeme = strec.getName();
-        StRec symbol = lookup(lexeme, scope);
-        if (symbol != null){ //If symbol already exists
-            return null;
-        }
-        symbol = new StRec(lexeme, ln);
+    public void insert(StRec symbol, String scope){
+        String lexeme = symbol.getName();
 
         switch(scope){
             case GLOBALS:
                 globals.put(lexeme, symbol);
-                return globals.get(lexeme);
+                break;
             case MAIN:
                 main.put(lexeme, symbol);
-                return main.get(lexeme);
+                break;
             case LITERALS:
                 globals.put(lexeme, symbol);
-                return literals.get(lexeme);
+                break;
             default:
                 functions.get(scope).put(lexeme,symbol);
-                return functions.get(scope).get(lexeme);
+                break;
         }
     }
 

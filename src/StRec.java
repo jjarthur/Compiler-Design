@@ -22,7 +22,6 @@ public class StRec {
     public StRec(String s, StRec type){
         name = s;
         typeName = type;
-        System.out.println(type+ "aAAA");
     }
 
     //Special constructor for global simple types
@@ -69,6 +68,7 @@ public class StRec {
     public TokId getType(){
         return type;
     }
+
     public StRec getTypeName(){
         return typeName;
     }

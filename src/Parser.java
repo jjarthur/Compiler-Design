@@ -1,3 +1,4 @@
+import javax.xml.bind.annotation.XmlElementDecl;
 import java.util.Queue;
 
 public class Parser {
@@ -56,12 +57,14 @@ public class Parser {
      */
     private void newName(TreeNode node) {
         Token token = tokenList.peek();
+        StRec symbol = new StRec(token.getStr(), token.getLn());
 
-        if (symbolTable.insert(token.getStr(), scope, token.getLn()) == null){ //If exists in symbol table
+        if (symbolTable.lookup(symbol.getName(), scope) != null){ //If exists in symbol table
             System.out.println("Semantic error on line " + token.getLn() + ": " + token.getStr() + " is already defined in this scope");
         }
+        symbolTable.insert(symbol, scope);
         node.setName(new StRec(token.getStr(), token.getLn()));
-        
+
         tokenList.poll();
     }
 
@@ -69,7 +72,7 @@ public class Parser {
         Token token = tokenList.peek();
         StRec name = symbolTable.lookup(token.getStr(), scope);
 
-        if (name == null){ //If exists in symbol table
+        if (name == null){ //If name does not exist in symbol table
             System.out.println("Semantic error on line " + token.getLn() + ": " + token.getStr() + " is not defined in this scope");
         }
         tokenList.poll();
@@ -83,12 +86,15 @@ public class Parser {
     private void newType(TreeNode node) {
         Token token = tokenList.peek();
         //symbolTable.insertSymbol(token.getStr(), token.getLn());
-        StRec symbol = symbolTable.lookup(token.getStr(), scope);
-        if (symbol == null){ //If exists in symbol table
+        StRec symbol = symbolTable.lookup(token.getStr(), SymbolTable.GLOBALS);
+        if (symbol == null){ //If symbol does not exist in symbol table
             System.out.println("Semantic error on line " + token.getLn() + ": " + token.getStr() + " is not defined in this scope");
         }
-        symbol.setTypeName(new StRec(token.getStr(), token.getLn()));
+        node.setType(symbol);
+        node.getName().setTypeName(symbol);
         //todo set the hashmap of this (this is custom types, ie symbol.setHashMap
+
+//        symbolTable.insert(new StRec("test", StRec.REALTYPE), SymbolTable.GLOBALS);
 
         tokenList.poll();
     }
@@ -98,9 +104,25 @@ public class Parser {
      * Post-conditions: Adds a type symbol table record for specified node.
      */
     private void newType(TreeNode node, String type) {
-        Token token = tokenList.peek();
-        //symbolTable.insertSymbol(type, token.getLn());
-        node.setType((StRec)SymbolTable.globals.get(type));
+        StRec symbol = new StRec(type, stringToStRec(type));
+        symbolTable.insert(symbol, SymbolTable.GLOBALS);
+        node.setType(symbol);
+        node.getName().setTypeName(stringToStRec(type));
+    }
+
+    private StRec stringToStRec(String type){
+        switch(type){
+            case "integer":
+                return StRec.INTTYPE;
+            case "VOID":
+                return StRec.VOIDTYPE;
+            case "real":
+                return StRec.REALTYPE;
+            case "boolean":
+                return StRec.BOOLTYPE;
+            default:
+                return null;
+        }
     }
 
     /*******************************************************************
