@@ -19,7 +19,7 @@ arrays	ZZ : YY
 func Ones(zz:YY) : void
 	i : integer
 begin
-	for (i << 0; i<size)
+	for (i << 0; i<size or i < size)
         	zz[i].x << 1;
         	i << i+1;
 	end

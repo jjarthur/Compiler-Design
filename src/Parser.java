@@ -4,12 +4,17 @@ public class Parser {
 
     //Private variables
     private Queue<Token> tokenList;
+    private SymbolTable symbolTable;
+    private String scope;
 
     //Public constructor
     public Parser(Queue<Token> tokenList){
         this.tokenList = tokenList;
+        this.symbolTable = new SymbolTable();
+        this.scope = SymbolTable.GLOBALS;
         printNodes();
         //printTree();
+        System.out.println(symbolTable);
     }
 
     //Local methods
@@ -51,10 +56,24 @@ public class Parser {
      */
     private void newName(TreeNode node) {
         Token token = tokenList.peek();
-        //symbolTable.insertSymbol(token.getStr(), token.getLn());
+
+        if (symbolTable.insert(token.getStr(), scope, token.getLn()) == null){ //If exists in symbol table
+            System.out.println("Semantic error on line " + token.getLn() + ": " + token.getStr() + " is already defined in this scope");
+        }
         node.setName(new StRec(token.getStr(), token.getLn()));
         
         tokenList.poll();
+    }
+
+    private StRec getName() {
+        Token token = tokenList.peek();
+        StRec name = symbolTable.lookup(token.getStr(), scope);
+
+        if (name == null){ //If exists in symbol table
+            System.out.println("Semantic error on line " + token.getLn() + ": " + token.getStr() + " is not defined in this scope");
+        }
+        tokenList.poll();
+        return name;
     }
 
     /**
@@ -64,7 +83,13 @@ public class Parser {
     private void newType(TreeNode node) {
         Token token = tokenList.peek();
         //symbolTable.insertSymbol(token.getStr(), token.getLn());
-        node.setType(new StRec(token.getStr(), token.getLn()));
+        StRec symbol = symbolTable.lookup(token.getStr(), scope);
+        if (symbol == null){ //If exists in symbol table
+            System.out.println("Semantic error on line " + token.getLn() + ": " + token.getStr() + " is not defined in this scope");
+        }
+        symbol.setTypeName(new StRec(token.getStr(), token.getLn()));
+        //todo set the hashmap of this (this is custom types, ie symbol.setHashMap
+
         tokenList.poll();
     }
 
@@ -75,7 +100,7 @@ public class Parser {
     private void newType(TreeNode node, String type) {
         Token token = tokenList.peek();
         //symbolTable.insertSymbol(type, token.getLn());
-        node.setType(new StRec(type, token.getLn()));
+        node.setType((StRec)SymbolTable.globals.get(type));
     }
 
     /*******************************************************************
@@ -169,6 +194,7 @@ public class Parser {
     }
 
     private TreeNode mainbody() {
+        scope = SymbolTable.MAIN;
         TreeNode mainbody = new TreeNode(Node.NMAIN);
 
         if (tokenList.peek().value() == TokId.TMAIN){ //Checking for 'main'
@@ -184,7 +210,7 @@ public class Parser {
 
                     if (tokenList.peek().value() == TokId.TCD){ //Checking for 'CD'
                         tokenList.poll();
-                        newName(mainbody);
+                        mainbody.setName(getName());
                         return mainbody;
                     }
                 }
@@ -313,8 +339,11 @@ public class Parser {
         TreeNode func = new TreeNode(Node.NFUND);
         if (tokenList.peek().value() == TokId.TFUNC){ //Checking for 'func'
             tokenList.poll();
-            newName(func);
 
+            newName(func);
+            //scope = tokenList.peek().getStr();
+            scope = func.getName().getName();
+            symbolTable.addFunction(scope);
             if (tokenList.peek().value() == TokId.TLPAR) { //Checking for '('
                 tokenList.poll();
                 func.setLeft(plist());
@@ -415,6 +444,7 @@ public class Parser {
 
             if (tokenList.peek().value() == TokId.TENDK){ //Checking for 'end'
                 tokenList.poll();
+                scope = SymbolTable.GLOBALS;
                 return func;
             }
         }
@@ -521,7 +551,7 @@ public class Parser {
                 return repstat();
             case TIDNT: //Could be asgnstat or callstat
                 TreeNode stat = new TreeNode(Node.NUNDEF);
-                newName(stat);
+                stat.setName(getName());
                 current = tokenList.peek();
                 if (current.value() == TokId.TLPAR){ //If callstat
                     return callstat(stat);
@@ -766,7 +796,7 @@ public class Parser {
 
     private TreeNode var() {
         TreeNode var = new TreeNode(Node.NSIMV);
-        newName(var);
+        var.setName(getName());
         return vararr(var);
     }
 
@@ -952,23 +982,23 @@ public class Parser {
                 return var();
             case TILIT: //Checking for integer
                 exponent = new TreeNode(Node.NILIT);
-                newName(exponent);
+                tokenList.poll();
                 return exponent;
             case TFLIT: //Checking for float
                 exponent = new TreeNode(Node.NFLIT);
-                newName(exponent);
+                tokenList.poll();
                 return new TreeNode(Node.NFLIT);
             case TFUNC: //Checking for 'func'
                 exponent = new TreeNode(Node.NUNDEF);
-                newName(exponent);
+                tokenList.poll();
                 return fncall(exponent);
             case TTRUE: //Checking for 'true'
                 exponent = new TreeNode(Node.NTRUE);
-                newName(exponent);
+                tokenList.poll();
                 return new TreeNode(Node.NTRUE);
             case TFALS: //Checking for 'false'
                 exponent = new TreeNode(Node.NFALS);
-                newName(exponent);
+                tokenList.poll();
                 return new TreeNode(Node.NFALS);
             case TLPAR: //Checking for '('
                 tokenList.poll();
@@ -983,7 +1013,7 @@ public class Parser {
     }
 
     private TreeNode fncall(TreeNode exponent){
-        newName(exponent);
+        exponent.setName(getName());
 
         if (tokenList.peek().value() == TokId.TLPAR){
             tokenList.poll();
@@ -1026,7 +1056,7 @@ public class Parser {
     private TreeNode printitem() {
         if (tokenList.peek().value() == TokId.TSTRG){
             TreeNode printitem = new TreeNode(Node.NSTRG);
-            newName(printitem);
+            tokenList.poll();
             return printitem;
         }
         return expr();

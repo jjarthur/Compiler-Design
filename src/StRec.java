@@ -1,4 +1,4 @@
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.VoidType;
+import java.util.HashMap;
 
 public class StRec {
 
@@ -11,12 +11,18 @@ public class StRec {
     private boolean decl; //Set when declared
     private StRec typeName; //Link between this identifier/literal and its type
     private TreeNode declPlace; //Where the decl syntax sub-tree is for a func (for param type checks)
-    private HashTable hashTable; //Complete hash table for a list of fields in a particular struct
+    private HashMap hashTable; //Complete hash table for a list of fields in a particular struct
     private int base; //Base register number (code gen)
     private int offset; //Allocated offset (code gen)
 
     public StRec(String s){
         this(s,0,-1);
+    }
+
+    public StRec(String s, StRec type){
+        name = s;
+        typeName = type;
+        System.out.println(type+ "aAAA");
     }
 
     //Special constructor for global simple types
@@ -58,5 +64,32 @@ public class StRec {
 
     public String getName(){
         return name;
+    }
+
+    public TokId getType(){
+        return type;
+    }
+    public StRec getTypeName(){
+        return typeName;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public void setTypeName(StRec typeName){
+        this.typeName = typeName;
+    }
+
+    public String toString(){
+        String output = name + " | ";
+        if (typeName != null){
+            output += typeName.getName();
+        }
+        output += " | ";
+        if  (hashTable != null){
+            output += hashTable.toString();
+        }
+        return output;
     }
 }
