@@ -1,5 +1,5 @@
 ////
-////	COMP3290/6290 CD A3
+////	COMP3290/6290 CD A4
 ////
 ////	Syntax Tree Class - Builds a syntax tree node
 ////

@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class A3 {
+public class A4 {
 	private Queue<Token> tokenList;
 
 	public String readInput(String input){
@@ -55,16 +55,16 @@ public class A3 {
 	}
 	
 	private void run(String stream){
-		System.out.println(listing(stream));
+		//System.out.println(listing(stream));
 		//System.out.println("-------------------- Scanner --------------------");
 		Tokenizer tokenizer = new Tokenizer(stream);
 		tokenList = tokenizer.run();
 		//System.out.println("\n-------------------- Parser --------------------");
-		Parser parser = new Parser(tokenList);
+		Parser parser = new Parser(tokenList, stream);
 	}
 
 	public static void main(String[] args){
-		A3 compiler = new A3();
+		A4 compiler = new A4();
 		compiler.run(compiler.readInput(args[0]));
 	}
 }

@@ -5,24 +5,39 @@ public class Parser {
     //Private variables
     private Queue<Token> tokenList;
     private SymbolTable symbolTable;
-    private String scope;
+    private String scope, stream, errorList;
+    private int errorCount = 0;
 
     //Public constructor
-    public Parser(Queue<Token> tokenList){
+    public Parser(Queue<Token> tokenList, String stream){
         this.tokenList = tokenList;
+        this.stream = stream;
+        this.errorList = "\n";
         this.symbolTable = new SymbolTable();
         this.scope = SymbolTable.GLOBALS;
-        printNodes();
-//        printTree();
-        System.out.println(symbolTable);
+        run();
     }
 
     //Local methods
+    private void run(){
+//        printNodes();
+        printTree();
+        System.out.println(errorList);
+//        System.out.println(symbolTable);
+
+        if (errorCount == 0){
+            System.out.println("No errors.");
+        }
+        else{
+            System.out.println(errorCount + " errors found.");
+        }
+    }
+
     /**
      * Pre-conditions: None.
      * Post-conditions: Prints tokens in a tree-like format.
      */
-    public void printTree() {
+    private void printTree() {
         System.out.println(program().toString(0));
     }
 
@@ -31,8 +46,8 @@ public class Parser {
      * Post-conditions: Prints tokens with format as described in
      *                  assignment specifications.
      */
-    public void printNodes(){
-        System.out.println("\n" + program().printNodeSpace());
+    private void printNodes(){
+        System.out.println(program().printNodeSpace());
     }
 
     /**
@@ -42,16 +57,35 @@ public class Parser {
      */
     private TreeNode syntaxError(){
         Token current = tokenList.peek();
-        System.out.println("Syntax error on line " + current.getLn() + ". Unexpected token: " + current.value());
+        errorList  += listingLine(current.getLn()) + "\nSyntax error - Line " + current.getLn() + "\nUnexpected token: " + current.value() + "\n\n";
         while(current.value() != TokId.TSEMI && current.value() != TokId.TEOF){
             tokenList.poll();
             current = tokenList.peek();
         }
+        errorCount++;
         return new TreeNode(Node.NUNDEF);
     }
 
     public void semanticError(String error, int ln){
-        System.out.println("Semantic error on line " + ln + ": " + error);
+        errorList += listingLine(ln) + "\nSemantic error - Line " + ln + "\n" + error + "\n\n";
+        errorCount++;
+    }
+
+    private String listingLine(int ln){
+        String listing = ln + " ";
+        int currentLn = 1;
+
+        for (int i = 0; i < stream.length(); i++) {
+            if (stream.charAt(i) == '\n') {
+                currentLn++;
+            }
+            if (ln == currentLn) {
+                if (stream.charAt(i) != '\n'){
+                    listing += stream.charAt(i);
+                }
+            }
+        }
+        return listing;
     }
 
     /**
@@ -126,6 +160,11 @@ public class Parser {
 //                }
                 return null;
         }
+    }
+
+    private void checkParams(TreeNode arglist){
+//        TreeNode plist = symbolTable.lookup(arglist.getName().getName(), SymbolTable.GLOBALS)
+
     }
 
     /*******************************************************************
@@ -371,9 +410,9 @@ public class Parser {
             tokenList.poll();
 
             newName(func);
-            //scope = tokenList.peek().getStr();
             scope = func.getName().getName();
             symbolTable.addFunction(scope);
+
             if (tokenList.peek().value() == TokId.TLPAR) { //Checking for '('
                 tokenList.poll();
                 func.setLeft(plist());
@@ -784,6 +823,8 @@ public class Parser {
 
             if (tokenList.peek().value() == TokId.TRPAR){
                 tokenList.poll();
+
+                checkParams(stat);
                 return stat;
             }
         }

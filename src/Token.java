@@ -1,4 +1,4 @@
-// COMP3290 CD A3
+// COMP3290 CD A4
 //
 //	Token class	- constructs a token on behalf of the scanner for it to be sent to the parser.
 //			- IDNTs/ILITs/FLITs/Strings do not have their symbol table reference set in this class,

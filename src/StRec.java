@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class StRec {
@@ -14,6 +15,7 @@ public class StRec {
     private HashMap hashTable; //Complete hash table for a list of fields in a particular struct
     private int base; //Base register number (code gen)
     private int offset; //Allocated offset (code gen)
+    private ArrayList<StRec> paramList;
 
     public StRec(String s){
         this(s,0,-1);
