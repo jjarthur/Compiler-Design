@@ -1,0 +1,33 @@
+/-*
+/-- Test Program
+/-- This program demonstrates the semantic
+/-- functionality implemented in my compiler.
+*-/
+
+CD test
+constants
+    size is 500
+types
+	XX is x:integer, y:integer end
+	YY is array[size] of XX
+arrays	ZZ : YY
+
+func Ones(zz:YY, p:integer) : void
+	i : integer, i : real /-- i is already defined in this scope
+begin
+	for (i << 0; i<size or i < size)
+        	zz[i].x << 1;
+        	i << i+1;
+	end
+	return;
+end
+
+main
+	i:integer
+begin
+	Ones(ZZ, i);
+
+	Zeroes(ZZ); /-- Zeroes is not defined in this scope
+/-- EOF name not equal to program name
+/-- tset is not defined in this scope
+end CD tset

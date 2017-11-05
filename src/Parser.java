@@ -20,8 +20,8 @@ public class Parser {
 
     //Local methods
     private void run(){
-//        printNodes();
-        printTree();
+        printNodes();
+//        printTree();
         System.out.println(errorList);
 //        System.out.println(symbolTable);
 
